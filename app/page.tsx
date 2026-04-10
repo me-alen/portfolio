@@ -15,6 +15,7 @@ import {
   clientProjects,
   education,
   experience,
+  funProjects,
   personalProjects,
   profile,
   skills,
@@ -37,6 +38,7 @@ export default function Home() {
           companyProjects={companyProjects}
           personalProjects={personalProjects}
           clientProjects={clientProjects}
+          funProjects={funProjects}
         />
         <ContactSection
           email={contact.email}

@@ -7,6 +7,7 @@ type ProjectsSectionProps = {
   companyProjects: ProjectItem[];
   personalProjects: ProjectItem[];
   clientProjects: ProjectItem[];
+  funProjects: ProjectItem[];
 };
 
 const projectGroups = [
@@ -22,12 +23,17 @@ const projectGroups = [
     label: "Client Projects",
     key: "client",
   },
+  {
+    label: "Fun Projects",
+    key: "fun",
+  },
 ] as const;
 
 export default function ProjectsSection({
   companyProjects,
   personalProjects,
   clientProjects,
+  funProjects,
 }: ProjectsSectionProps) {
   const [activeGroup, setActiveGroup] = useState<
     (typeof projectGroups)[number]["key"]
@@ -67,7 +73,9 @@ export default function ProjectsSection({
       ? companyProjects
       : activeGroup === "personal"
         ? personalProjects
-        : clientProjects;
+        : activeGroup === "client"
+          ? clientProjects
+          : funProjects;
 
   return (
     <section id="projects" className="mb-14 sm:mb-20">
@@ -122,6 +130,30 @@ export default function ProjectsSection({
                 </span>
               ))}
             </div>
+            {project.githubUrl || project.liveUrl ? (
+              <div className="mt-4 flex flex-wrap gap-4">
+                {project.liveUrl ? (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-indigo-400 transition-colors hover:text-indigo-300"
+                  >
+                    Live site
+                  </a>
+                ) : null}
+                {project.githubUrl ? (
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-indigo-400 transition-colors hover:text-indigo-300"
+                  >
+                    View repo
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
           </article>
         ))}
       </div>

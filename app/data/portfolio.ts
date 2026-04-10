@@ -10,6 +10,8 @@ export type ProjectItem = {
   description: string;
   stack: string[];
   period: string;
+  githubUrl?: string;
+  liveUrl?: string;
 };
 
 export type EducationItem = {
@@ -135,6 +137,27 @@ export const companyProjects: ProjectItem[] = [
       "Contributed to admin, client, and authentication portals with Angular, integrating with backend APIs to deliver consistent user experiences.",
     stack: ["Angular", "Spring Boot", "SQL"],
     period: "Dec 2019 - Jun 2022",
+  },
+];
+
+export const funProjects: ProjectItem[] = [
+  {
+    title: "DVD Bounce",
+    description:
+      "A nostalgic DVD-logo bounce animation project focused on smooth movement, timing, and playful visual behavior.",
+    stack: ["JavaScript", "TypeScript", "CSS", "HTML"],
+    period: "Fun Project",
+    githubUrl: "https://github.com/me-alen/dvd-bounce",
+    liveUrl: "https://dvd-bounce-mu.vercel.app",
+  },
+  {
+    title: "Sand Drop",
+    description:
+      "A creative React/TypeScript sandbox project focused on experimentation with UI behavior, visuals, and interaction ideas.",
+    stack: ["TypeScript", "React", "SCSS"],
+    period: "Fun Project",
+    githubUrl: "https://github.com/me-alen/sand-drop",
+    liveUrl: "https://sand-drop.vercel.app",
   },
 ];
 
