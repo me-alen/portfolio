@@ -27,11 +27,18 @@ function applyTheme(theme: Theme) {
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
+    const initialTheme = getInitialTheme();
+    applyTheme(initialTheme);
+
+    if (initialTheme !== "light") {
+      requestAnimationFrame(() => {
+        setTheme(initialTheme);
+      });
+    }
+  }, []);
 
   const toggleTheme = () => {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
@@ -44,12 +51,20 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="rounded-full border border-[var(--border-color)] px-4 py-2 text-sm font-semibold text-[var(--soft-foreground)] transition-all duration-300 ease-out hover:scale-[1.02] hover:border-[var(--subtle-foreground)] active:scale-95"
+      className="rounded-full border border-[var(--border-color)] px-3 py-2 text-xs font-semibold text-[var(--soft-foreground)] transition-all duration-300 ease-out hover:scale-[1.02] hover:border-[var(--subtle-foreground)] active:scale-95 sm:px-4 sm:text-sm"
       aria-label="Toggle dark and light theme"
     >
-      {theme === "dark"
-        ? "Return to the light side"
-        : "Join the dark side"}
+      {theme === "dark" ? (
+        <>
+          <span className="sm:hidden">Light side</span>
+          <span className="hidden sm:inline">Return to the light side</span>
+        </>
+      ) : (
+        <>
+          <span className="sm:hidden">Dark side</span>
+          <span className="hidden sm:inline">Join the dark side</span>
+        </>
+      )}
     </button>
   );
 }

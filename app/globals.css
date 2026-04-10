@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
-  --muted-foreground: #3f3f46;
-  --subtle-foreground: #52525b;
-  --soft-foreground: #27272a;
-  --border-color: #d4d4d8;
-  --card-bg: rgba(255, 255, 255, 0.78);
-  --chip-bg: #e4e4e7;
+  --background: #f3efe7;
+  --foreground: #1f1d19;
+  --muted-foreground: #4a453d;
+  --subtle-foreground: #625a4f;
+  --soft-foreground: #2b2721;
+  --border-color: #cfc6b8;
+  --card-bg: rgba(255, 252, 247, 0.86);
+  --chip-bg: #e9e1d4;
 }
 
 [data-theme="dark"] {

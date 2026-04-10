@@ -10,8 +10,8 @@ import { contact, experience, profile, projects, skills } from "./data/portfolio
 
 export default function Home() {
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-16 sm:px-10">
-      <div className="mb-10 flex justify-end">
+    <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
+      <div className="mb-8 flex justify-end sm:mb-10">
         <ThemeToggle />
       </div>
       <HeroSection name={profile.name} intro={profile.intro} />
