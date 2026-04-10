@@ -1,20 +1,109 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import type { ProjectItem } from "../data/portfolio";
 
 type ProjectsSectionProps = {
-  projects: ProjectItem[];
+  companyProjects: ProjectItem[];
+  personalProjects: ProjectItem[];
+  clientProjects: ProjectItem[];
 };
 
-export default function ProjectsSection({ projects }: ProjectsSectionProps) {
+const projectGroups = [
+  {
+    label: "Company Projects",
+    key: "company",
+  },
+  {
+    label: "Personal Projects",
+    key: "personal",
+  },
+  {
+    label: "Client Projects",
+    key: "client",
+  },
+] as const;
+
+export default function ProjectsSection({
+  companyProjects,
+  personalProjects,
+  clientProjects,
+}: ProjectsSectionProps) {
+  const [activeGroup, setActiveGroup] = useState<
+    (typeof projectGroups)[number]["key"]
+  >("company");
+  const [isSwitching, setIsSwitching] = useState(false);
+  const switchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (switchTimerRef.current) {
+        clearTimeout(switchTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleGroupChange = (nextGroup: (typeof projectGroups)[number]["key"]) => {
+    if (nextGroup === activeGroup || isSwitching) {
+      return;
+    }
+
+    setIsSwitching(true);
+
+    if (switchTimerRef.current) {
+      clearTimeout(switchTimerRef.current);
+    }
+
+    switchTimerRef.current = setTimeout(() => {
+      setActiveGroup(nextGroup);
+      requestAnimationFrame(() => {
+        setIsSwitching(false);
+      });
+    }, 170);
+  };
+
+  const visibleProjects =
+    activeGroup === "company"
+      ? companyProjects
+      : activeGroup === "personal"
+        ? personalProjects
+        : clientProjects;
+
   return (
     <section id="projects" className="mb-14 sm:mb-20">
       <h2 className="mb-5 text-xl font-semibold sm:mb-6 sm:text-2xl">
         Projects
       </h2>
-      <div className="grid gap-4 sm:gap-6">
-        {projects.map((project) => (
+
+      <div className="mb-5 flex gap-2 overflow-x-auto pb-1 sm:mb-6">
+        {projectGroups.map((group) => {
+          const isActive = activeGroup === group.key;
+          return (
+            <button
+              key={group.key}
+              type="button"
+              onClick={() => handleGroupChange(group.key)}
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-300 sm:text-sm ${
+                isActive
+                  ? "border-indigo-500 bg-indigo-500 text-white"
+                  : "border-[var(--border-color)] text-[var(--soft-foreground)] hover:border-[var(--subtle-foreground)]"
+              }`}
+            >
+              {group.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        className={`grid gap-4 transition-all duration-200 ease-out sm:gap-6 ${
+          isSwitching ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"
+        }`}
+      >
+        {visibleProjects.map((project) => (
           <article
             key={project.title}
-            className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-4 sm:p-6"
+            className="rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-4 transition-transform duration-300 hover:-translate-y-0.5 sm:p-6"
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
               <h3 className="text-lg font-semibold sm:text-xl">{project.title}</h3>
@@ -36,6 +125,12 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
           </article>
         ))}
       </div>
+
+      {visibleProjects.length === 0 ? (
+        <p className="mt-4 text-sm text-[var(--subtle-foreground)]">
+          No projects added in this section yet.
+        </p>
+      ) : null}
     </section>
   );
 }

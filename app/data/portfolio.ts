@@ -12,13 +12,19 @@ export type ProjectItem = {
   period: string;
 };
 
+export type EducationItem = {
+  degree: string;
+  institution: string;
+  period: string;
+};
+
 export const profile = {
   name: "Alen Francis",
   role: "Frontend Developer",
   intro:
-    "Frontend Developer with nearly 5 years of experience building responsive, user-focused web and mobile applications using Angular, React, and React Native.",
+    "Frontend Developer with 6+ years of experience building responsive, user-focused web and mobile products using Angular, React, React Native, and Next.js.",
   about:
-    "I build modern, scalable interfaces with strong attention to usability, performance, and maintainability. I enjoy collaborating with product, design, and backend teams to ship quality features on time and continuously improve product experience.",
+    "I focus on clean UI architecture, smooth product experiences, and fast iteration with modern workflows. I work confidently with Angular, React, React Native, and Next.js, and I use tools and practices like vibe coding, Jira, Azure, and Cursor to collaborate effectively and ship reliable features.",
 };
 
 export const skills = [
@@ -36,8 +42,10 @@ export const skills = [
   "MySQL",
   "Redux",
   "Expo",
+  "Vibe Coding",
   "JIRA",
   "Azure",
+  "Cursor",
   "Git",
 ];
 
@@ -72,7 +80,27 @@ export const experience: ExperienceItem[] = [
   },
 ];
 
-export const projects: ProjectItem[] = [
+export const personalProjects: ProjectItem[] = [
+  {
+    title: "ShiftCare",
+    description:
+      "Built and enhanced web features for care workflow management, focusing on usability, performance, and reliable day-to-day operations.",
+    stack: ["React", "Next.js", "TypeScript", "Frontend Architecture"],
+    period: "Personal / Product Work",
+  },
+];
+
+export const clientProjects: ProjectItem[] = [
+  {
+    title: "Terresta Projects",
+    description:
+      "Delivered multiple real-estate website experiences for Terresta, implementing responsive UIs, optimized pages, and smooth lead-focused user journeys.",
+    stack: ["Next.js", "React", "Tailwind CSS", "Responsive Design"],
+    period: "Client Projects",
+  },
+];
+
+export const companyProjects: ProjectItem[] = [
   {
     title: "CR Connect - ClubReady",
     description:
@@ -110,8 +138,18 @@ export const projects: ProjectItem[] = [
   },
 ];
 
+export const education: EducationItem[] = [
+  {
+    degree: "B Tech in Computer Science Engineering",
+    institution: "APJ Abdul Kalam Technological University",
+    period: "2015 - 2019",
+  },
+];
+
 export const contact = {
   email: "alenofficial10@gmail.com",
   phone: "+91 97444 78281",
   location: "Kochi, Kerala, India",
+  github: "https://github.com/me-alen",
+  linkedin: "https://www.linkedin.com/in/imonlyalen/",
 };
