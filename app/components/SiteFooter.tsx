@@ -4,7 +4,7 @@ type SiteFooterProps = {
 
 export default function SiteFooter({ name }: SiteFooterProps) {
   return (
-    <footer className="border-t border-zinc-800 pt-6 text-sm text-zinc-400">
+    <footer className="border-t border-[var(--border-color)] pt-6 text-sm text-[var(--subtle-foreground)]">
       <p>
         © {new Date().getFullYear()} {name}. All rights reserved.
       </p>

@@ -10,7 +10,7 @@ export default function SkillsSection({ skills }: SkillsSectionProps) {
         {skills.map((skill) => (
           <span
             key={skill}
-            className="rounded-full border border-zinc-700 px-4 py-2 text-sm text-zinc-200"
+            className="rounded-full border border-[var(--border-color)] px-4 py-2 text-sm text-[var(--soft-foreground)]"
           >
             {skill}
           </span>
