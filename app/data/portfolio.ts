@@ -53,7 +53,7 @@ export const skills = [
 
 export const experience: ExperienceItem[] = [
   {
-    company: "Innovatise / myFitApp / ClubReady",
+    company: "Innovatise / myFitApp / ClubReady / Xplor Technologies",
     location: "Trivandrum",
     period: "Aug 2023 - Present",
     summary:
