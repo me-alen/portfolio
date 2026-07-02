@@ -27,7 +27,7 @@ export default function BackToTopButton() {
       type="button"
       onClick={scrollToTop}
       aria-label="Back to top"
-      className={`fixed bottom-5 right-4 z-40 rounded-full border border-[var(--border-color)] bg-[var(--card-bg)] px-4 py-2 text-xs font-semibold text-[var(--soft-foreground)] shadow-sm backdrop-blur-sm transition-all duration-300 sm:bottom-6 sm:right-6 sm:text-sm ${
+      className={`fixed bottom-5 left-4 z-40 rounded-full border border-[var(--border-color)] bg-[var(--card-bg)] px-4 py-2 text-xs font-semibold text-[var(--soft-foreground)] shadow-sm backdrop-blur-sm transition-all duration-300 sm:bottom-6 sm:left-6 sm:text-sm ${
         showButton
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-3 opacity-0"

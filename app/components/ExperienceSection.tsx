@@ -22,10 +22,38 @@ export default function ExperienceSection({
               <h3 className="text-base font-semibold sm:text-lg">{role.company}</h3>
               <p className="text-sm text-[var(--subtle-foreground)]">{role.period}</p>
             </div>
-            <p className="mt-1 text-sm text-[var(--subtle-foreground)]">{role.location}</p>
+            <p className="mt-1 text-sm font-semibold text-[var(--soft-foreground)]">
+              {role.role}
+            </p>
+            <p className="mt-1 text-sm text-[var(--subtle-foreground)]">
+              {role.location}
+            </p>
             <p className="mt-3 text-sm leading-7 text-[var(--muted-foreground)] sm:mt-4 sm:text-base sm:leading-8">
               {role.summary}
             </p>
+            <ul className="mt-4 space-y-2 text-sm leading-7 text-[var(--muted-foreground)] sm:text-base sm:leading-8">
+              {role.bullets.map((bullet) => (
+                <li className="relative pl-7" key={bullet}>
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-0 top-0.5 text-sm font-extrabold leading-7"
+                  >
+                    ➜
+                  </span>
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {role.stack.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full bg-[var(--chip-bg)] px-2.5 py-1 text-[11px] text-[var(--soft-foreground)] sm:px-3 sm:text-xs"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </article>
         ))}
       </div>

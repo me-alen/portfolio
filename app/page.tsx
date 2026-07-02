@@ -1,14 +1,6 @@
-import AboutSection from "./components/AboutSection";
-import BackToTopButton from "./components/BackToTopButton";
-import ContactSection from "./components/ContactSection";
-import EducationSection from "./components/EducationSection";
-import ExperienceSection from "./components/ExperienceSection";
-import HeroSection from "./components/HeroSection";
-import ProjectsSection from "./components/ProjectsSection";
-import ScrollProgress from "./components/ScrollProgress";
-import SiteFooter from "./components/SiteFooter";
-import SkillsSection from "./components/SkillsSection";
-import ThemeToggle from "./components/ThemeToggle";
+import { randomInt } from "crypto";
+import PortfolioStyleOne from "./components/PortfolioStyleOne";
+import PortfolioStyleTwo from "./components/PortfolioStyleTwo";
 import {
   companyProjects,
   contact,
@@ -16,40 +8,50 @@ import {
   education,
   experience,
   funProjects,
+  languages,
   personalProjects,
   profile,
   skills,
 } from "./data/portfolio";
 
+export const dynamic = "force-dynamic";
+
+function pickPortfolioStyle() {
+  return randomInt(2) === 0 ? "style-1" : "style-2";
+}
+
 export default function Home() {
-  return (
-    <>
-      <ScrollProgress />
-      <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
-        <div className="mb-8 flex justify-end sm:mb-10">
-          <ThemeToggle />
-        </div>
-        <HeroSection name={profile.name} intro={profile.intro} />
-        <AboutSection about={profile.about} />
-        <SkillsSection skills={skills} />
-        <EducationSection education={education} />
-        <ExperienceSection experience={experience} />
-        <ProjectsSection
-          companyProjects={companyProjects}
-          personalProjects={personalProjects}
-          clientProjects={clientProjects}
-          funProjects={funProjects}
-        />
-        <ContactSection
-          email={contact.email}
-          phone={contact.phone}
-          location={contact.location}
-          github={contact.github}
-          linkedin={contact.linkedin}
-        />
-        <SiteFooter name={profile.name} />
-      </main>
-      <BackToTopButton />
-    </>
-  );
+  const style = pickPortfolioStyle();
+  const sharedProps = {
+    profile,
+    skills,
+    education,
+    experience,
+    companyProjects,
+    personalProjects,
+    clientProjects,
+    funProjects,
+    contact,
+  };
+
+  if (style === "style-2") {
+    return (
+      <PortfolioStyleTwo
+        profile={profile}
+        skills={skills}
+        languages={languages}
+        education={education}
+        experience={experience}
+        projectGroups={[
+          { label: "Company Projects", projects: companyProjects },
+          { label: "Personal Projects", projects: personalProjects },
+          { label: "Client Projects", projects: clientProjects },
+          { label: "Fun Projects", projects: funProjects },
+        ]}
+        contact={contact}
+      />
+    );
+  }
+
+  return <PortfolioStyleOne {...sharedProps} />;
 }
