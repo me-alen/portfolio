@@ -47,23 +47,54 @@ export default function ThemeToggle() {
     localStorage.setItem(STORAGE_KEY, nextTheme);
   };
 
+  const isDark = theme === "dark";
+
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      className="rounded-full border border-[var(--border-color)] px-3 py-2 text-xs font-semibold text-[var(--soft-foreground)] transition-all duration-300 ease-out hover:scale-[1.02] hover:border-[var(--subtle-foreground)] active:scale-95 sm:px-4 sm:text-sm"
-      aria-label="Toggle dark and light theme"
+      className="group grid h-10 w-10 place-items-center rounded-full border border-[var(--border-color)] text-[var(--soft-foreground)] transition-all duration-300 ease-out hover:scale-105 hover:border-[var(--subtle-foreground)] active:scale-95"
+      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      title={isDark ? "Switch to light theme" : "Switch to dark theme"}
     >
-      {theme === "dark" ? (
-        <>
-          <span className="sm:hidden">Light side</span>
-          <span className="hidden sm:inline">Return to the light side</span>
-        </>
+      {isDark ? (
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="transition-transform duration-300 group-hover:-rotate-12"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
       ) : (
-        <>
-          <span className="sm:hidden">Dark side</span>
-          <span className="hidden sm:inline">Join the dark side</span>
-        </>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="transition-transform duration-300 group-hover:rotate-45"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="M4.93 4.93l1.41 1.41" />
+          <path d="M17.66 17.66l1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="M6.34 17.66l-1.41 1.41" />
+          <path d="M19.07 4.93l-1.41 1.41" />
+        </svg>
       )}
     </button>
   );

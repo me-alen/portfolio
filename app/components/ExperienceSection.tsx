@@ -48,7 +48,7 @@ export default function ExperienceSection({
               {role.stack.map((item) => (
                 <span
                   key={item}
-                  className="rounded-full bg-[var(--chip-bg)] px-2.5 py-1 text-[11px] text-[var(--soft-foreground)] sm:px-3 sm:text-xs"
+                  className="rounded-full bg-[var(--chip-bg)] px-2.5 py-1 text-xs text-[var(--soft-foreground)] sm:px-3"
                 >
                   {item}
                 </span>

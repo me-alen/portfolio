@@ -48,7 +48,7 @@ export default function ContactSection({
           <button
             type="button"
             onClick={handleCopyEmail}
-            className="rounded-full border border-[var(--border-color)] px-2.5 py-1 text-xs font-semibold transition-colors hover:border-[var(--subtle-foreground)]"
+            className="rounded-full border border-[var(--border-color)] px-3 py-1.5 text-xs font-semibold transition-colors hover:border-[var(--subtle-foreground)]"
           >
             {copied ? "Copied!" : "Copy email"}
           </button>
@@ -74,7 +74,7 @@ export default function ContactSection({
             rel="noopener noreferrer"
             className="font-semibold text-indigo-400 transition-colors hover:text-indigo-300"
           >
-            imonlyalen
+            alenfrancis
           </a>
         </p>
       </div>

@@ -1,6 +1,5 @@
-import { randomInt } from "crypto";
-import PortfolioStyleOne from "./components/PortfolioStyleOne";
-import PortfolioStyleTwo from "./components/PortfolioStyleTwo";
+import { cookies } from "next/headers";
+import PortfolioClient from "./components/PortfolioClient";
 import {
   companyProjects,
   contact,
@@ -13,45 +12,30 @@ import {
   profile,
   skills,
 } from "./data/portfolio";
+import { DEFAULT_STYLE, STYLE_COOKIE, type PortfolioStyle } from "./styleConfig";
 
-export const dynamic = "force-dynamic";
+export default async function Home() {
+  const cookieStore = await cookies();
+  const storedStyle = cookieStore.get(STYLE_COOKIE)?.value;
+  const hasChoice = storedStyle === "style-1" || storedStyle === "style-2";
+  const initialStyle: PortfolioStyle = hasChoice
+    ? (storedStyle as PortfolioStyle)
+    : DEFAULT_STYLE;
 
-function pickPortfolioStyle() {
-  return randomInt(2) === 0 ? "style-1" : "style-2";
-}
-
-export default function Home() {
-  const style = pickPortfolioStyle();
-  const sharedProps = {
-    profile,
-    skills,
-    education,
-    experience,
-    companyProjects,
-    personalProjects,
-    clientProjects,
-    funProjects,
-    contact,
-  };
-
-  if (style === "style-2") {
-    return (
-      <PortfolioStyleTwo
-        profile={profile}
-        skills={skills}
-        languages={languages}
-        education={education}
-        experience={experience}
-        projectGroups={[
-          { label: "Company Projects", projects: companyProjects },
-          { label: "Personal Projects", projects: personalProjects },
-          { label: "Client Projects", projects: clientProjects },
-          { label: "Fun Projects", projects: funProjects },
-        ]}
-        contact={contact}
-      />
-    );
-  }
-
-  return <PortfolioStyleOne {...sharedProps} />;
+  return (
+    <PortfolioClient
+      initialStyle={initialStyle}
+      showIntro={!hasChoice}
+      profile={profile}
+      skills={skills}
+      languages={languages}
+      education={education}
+      experience={experience}
+      companyProjects={companyProjects}
+      personalProjects={personalProjects}
+      clientProjects={clientProjects}
+      funProjects={funProjects}
+      contact={contact}
+    />
+  );
 }

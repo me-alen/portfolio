@@ -91,7 +91,7 @@ export default function ProjectsSection({
               key={group.key}
               type="button"
               onClick={() => handleGroupChange(group.key)}
-              className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-300 sm:text-sm ${
+              className={`shrink-0 rounded-full border px-3.5 py-2 text-xs font-semibold transition-all duration-300 sm:text-sm ${
                 isActive
                   ? "border-indigo-500 bg-indigo-500 text-white"
                   : "border-[var(--border-color)] text-[var(--soft-foreground)] hover:border-[var(--subtle-foreground)]"
@@ -124,7 +124,7 @@ export default function ProjectsSection({
               {project.stack.map((item) => (
                 <span
                   key={item}
-                  className="rounded-full bg-[var(--chip-bg)] px-2.5 py-1 text-[11px] text-[var(--soft-foreground)] sm:px-3 sm:text-xs"
+                  className="rounded-full bg-[var(--chip-bg)] px-2.5 py-1 text-xs text-[var(--soft-foreground)] sm:px-3"
                 >
                   {item}
                 </span>

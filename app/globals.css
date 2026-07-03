@@ -139,6 +139,43 @@ body {
   color: var(--style2-accent);
 }
 
+.style2-nav-toggle {
+  position: relative;
+  display: none;
+  width: 40px;
+  height: 40px;
+  margin: -8px -8px -8px 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.style2-nav-toggle span {
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  height: 2px;
+  background: var(--style2-text);
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.style2-nav-toggle span:nth-child(1) {
+  top: 15px;
+}
+
+.style2-nav-toggle span:nth-child(2) {
+  bottom: 15px;
+}
+
+.style2-nav-toggle-open span:nth-child(1) {
+  transform: translateY(3px) rotate(45deg);
+}
+
+.style2-nav-toggle-open span:nth-child(2) {
+  transform: translateY(-3px) rotate(-45deg);
+}
+
 .style2-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 0.72fr);
@@ -205,7 +242,7 @@ body {
   flex-direction: column;
   margin: 32px 0 24px;
   font-family: var(--font-style2-display), sans-serif;
-  font-size: 80px;
+  font-size: clamp(2.75rem, 8vw, 5rem);
   font-weight: 800;
   letter-spacing: 0;
   line-height: 0.95;
@@ -221,7 +258,7 @@ body {
   margin-bottom: 24px;
   color: var(--style2-muted);
   font-family: var(--font-style2-serif), serif;
-  font-size: 22px;
+  font-size: clamp(1.125rem, 2.4vw, 1.375rem);
   font-style: italic;
   font-weight: 300;
 }
@@ -308,7 +345,7 @@ body {
 .style2-stat-num {
   color: var(--style2-accent);
   font-family: var(--font-style2-display), sans-serif;
-  font-size: 40px;
+  font-size: clamp(2rem, 4vw, 2.5rem);
   font-weight: 800;
   line-height: 1;
 }
@@ -331,7 +368,7 @@ body {
 .style2-marquee-track {
   display: flex;
   width: max-content;
-  animation: style2-marquee 26s linear infinite;
+  animation: style2-marquee 64s linear infinite;
   white-space: nowrap;
 }
 
@@ -361,7 +398,7 @@ body {
 }
 
 .style2-section {
-  padding: 100px 48px;
+  padding: clamp(56px, 9vw, 100px) clamp(20px, 5vw, 48px);
 }
 
 .style2-surface {
@@ -387,9 +424,9 @@ body {
 }
 
 .style2-section-title {
-  margin-bottom: 64px;
+  margin-bottom: clamp(2.25rem, 5vw, 4rem);
   font-family: var(--font-style2-display), sans-serif;
-  font-size: 52px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1;
@@ -466,7 +503,7 @@ body {
 
 .style2-skill-group {
   background: var(--style2-card);
-  padding: 32px;
+  padding: clamp(20px, 4vw, 32px);
 }
 
 .style2-skill-group-wide {
@@ -658,7 +695,7 @@ body {
   overflow: hidden;
   min-height: 328px;
   background: var(--style2-card);
-  padding: 36px 32px;
+  padding: clamp(24px, 4vw, 36px) clamp(20px, 4vw, 32px);
   transition: background 0.2s ease;
 }
 
@@ -828,7 +865,7 @@ body {
   flex-direction: column;
   margin-bottom: 32px;
   font-family: var(--font-style2-display), sans-serif;
-  font-size: 64px;
+  font-size: clamp(2.25rem, 6vw, 4rem);
   font-weight: 800;
   letter-spacing: 0;
   line-height: 0.98;
@@ -916,27 +953,46 @@ body {
 }
 
 @media (max-width: 1100px) {
-  .style2-hero-name {
-    font-size: 64px;
-  }
-
-  .style2-section-title,
-  .style2-big-text {
-    font-size: 44px;
-  }
-
   .style2-projects-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .style2-edu-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 900px) {
   .style2-nav {
-    padding: 16px 24px;
+    padding: 14px 24px;
+  }
+
+  .style2-nav-toggle {
+    display: inline-flex;
   }
 
   .style2-nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     display: none;
+    flex-direction: column;
+    gap: 0;
+    padding: 4px 24px 16px;
+    background: rgba(8, 9, 8, 0.97);
+    border-bottom: 1px solid var(--style2-border);
+    backdrop-filter: blur(16px);
+  }
+
+  .style2-nav-links.style2-nav-open {
+    display: flex;
+  }
+
+  .style2-nav-links a {
+    padding: 14px 0;
+    font-size: 13px;
+    border-top: 1px solid var(--style2-border);
   }
 
   .style2-hero {
@@ -976,6 +1032,10 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .style2-project-card {
+    min-height: auto;
+  }
+
   .style2-exp-item {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -1005,15 +1065,6 @@ body {
 }
 
 @media (max-width: 560px) {
-  .style2-hero-name {
-    font-size: 44px;
-  }
-
-  .style2-section-title,
-  .style2-big-text {
-    font-size: 36px;
-  }
-
   .style2-hero-tag {
     width: 100%;
   }
@@ -1030,5 +1081,11 @@ body {
 
   .style2-contact-link {
     padding: 18px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .style2-marquee-track {
+    animation: none;
   }
 }
