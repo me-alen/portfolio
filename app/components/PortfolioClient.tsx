@@ -7,6 +7,7 @@ import type {
   ExperienceItem,
   ProjectItem,
 } from "../data/portfolio";
+import GameOverlay from "./GameOverlay";
 import PortfolioStyleOne from "./PortfolioStyleOne";
 import PortfolioStyleTwo from "./PortfolioStyleTwo";
 import PortfolioStyleThree from "./PortfolioStyleThree";
@@ -66,7 +67,13 @@ export default function PortfolioClient({
   const [displayStyle, setDisplayStyle] = useState<PortfolioStyle>(initialStyle);
   const [pageVisible, setPageVisible] = useState(true);
   const [introOpen, setIntroOpen] = useState(showIntro);
+  const [gameOpen, setGameOpen] = useState(false);
   const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // The playable game popup reuses the live deployment already listed in the
+  // fun-projects data, so the URL has a single source of truth.
+  const sandDrop = funProjects.find((project) => project.title === "Sand Drop");
+  const sandDropUrl = sandDrop?.liveUrl ?? "https://sand-drop.vercel.app";
 
   useEffect(() => {
     return () => {
@@ -154,11 +161,20 @@ export default function PortfolioClient({
         initials={getInitials(profile.name)}
         currentStyle={style}
         onSelect={selectStyle}
+        onPlayGame={() => setGameOpen(true)}
       />
       {introOpen ? (
         <StyleIntroOverlay
           onSelect={selectStyle}
           onClose={() => setIntroOpen(false)}
+          onPlayGame={() => setGameOpen(true)}
+        />
+      ) : null}
+      {gameOpen ? (
+        <GameOverlay
+          title="Sand Drop"
+          url={sandDropUrl}
+          onClose={() => setGameOpen(false)}
         />
       ) : null}
     </>

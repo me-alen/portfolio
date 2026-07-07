@@ -10,15 +10,17 @@ type StyleSwitcherProps = {
   initials: string;
   currentStyle: PortfolioStyle;
   onSelect: (style: PortfolioStyle) => void;
+  onPlayGame: () => void;
 };
 
 export default function StyleSwitcher({
   initials,
   currentStyle,
   onSelect,
+  onPlayGame,
 }: StyleSwitcherProps) {
   const [open, setOpen] = useState(false);
-  const [hovered, setHovered] = useState<PortfolioStyle | null>(null);
+  const [hovered, setHovered] = useState<PortfolioStyle | "game" | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -211,6 +213,52 @@ export default function StyleSwitcher({
               </button>
             );
           })}
+
+          <div
+            aria-hidden="true"
+            style={{ background: panelBorder, height: 1, margin: "6px 4px" }}
+          />
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              onPlayGame();
+              setOpen(false);
+            }}
+            onMouseEnter={() => setHovered("game")}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              alignItems: "center",
+              background: hovered === "game" ? hoverBg : "transparent",
+              border: "none",
+              borderRadius: 6,
+              color: panelText,
+              cursor: "pointer",
+              display: "flex",
+              fontSize: 13,
+              fontWeight: 500,
+              gap: 10,
+              padding: "8px 10px",
+              textAlign: "left",
+              transition: "background 0.15s ease",
+              width: "100%",
+            }}
+          >
+            <span
+              aria-hidden="true"
+              style={{
+                color: accent,
+                flex: "0 0 auto",
+                fontSize: 9,
+                lineHeight: 1,
+                textAlign: "center",
+                width: 9,
+              }}
+            >
+              ▶
+            </span>
+            <span style={{ flex: 1 }}>Play Sand Drop</span>
+          </button>
         </div>
       ) : null}
     </div>

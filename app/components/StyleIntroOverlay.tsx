@@ -9,6 +9,7 @@ import type { PortfolioStyle } from "../styleConfig";
 type StyleIntroOverlayProps = {
   onSelect: (style: PortfolioStyle) => void;
   onClose: () => void;
+  onPlayGame: () => void;
 };
 
 const OVERLAY_FADE_MS = 340;
@@ -17,8 +18,9 @@ const STEP_FADE_MS = 220;
 export default function StyleIntroOverlay({
   onSelect,
   onClose,
+  onPlayGame,
 }: StyleIntroOverlayProps) {
-  const [hovered, setHovered] = useState<PortfolioStyle | null>(null);
+  const [hovered, setHovered] = useState<PortfolioStyle | "game" | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [doneHover, setDoneHover] = useState(false);
   const [shown, setShown] = useState(false);
@@ -218,6 +220,68 @@ export default function StyleIntroOverlay({
                 );
               })}
             </div>
+
+            <div
+              aria-hidden="true"
+              style={{
+                alignItems: "center",
+                color: "rgba(240, 237, 232, 0.45)",
+                display: "flex",
+                fontSize: 11,
+                gap: 12,
+                letterSpacing: "0.14em",
+                margin: "18px 0",
+                textTransform: "uppercase",
+              }}
+            >
+              <span
+                style={{
+                  background: "rgba(255, 255, 255, 0.16)",
+                  flex: 1,
+                  height: 1,
+                }}
+              />
+              or
+              <span
+                style={{
+                  background: "rgba(255, 255, 255, 0.16)",
+                  flex: 1,
+                  height: 1,
+                }}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={onPlayGame}
+              onMouseEnter={() => setHovered("game")}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                alignItems: "center",
+                background:
+                  hovered === "game"
+                    ? "rgba(255, 255, 255, 0.12)"
+                    : "transparent",
+                border: "1px dashed rgba(255, 255, 255, 0.3)",
+                borderRadius: 10,
+                color: "#f0ede8",
+                cursor: "pointer",
+                display: "flex",
+                fontSize: 15,
+                fontWeight: 600,
+                gap: 12,
+                justifyContent: "center",
+                padding: "14px 16px",
+                textAlign: "center",
+                transition: "background 0.15s ease",
+                width: "100%",
+              }}
+            >
+              <span aria-hidden="true" style={{ fontSize: 11 }}>
+                ▶
+              </span>
+              Play Sand Drop — a game I built
+            </button>
           </>
         )}
       </div>
