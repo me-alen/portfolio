@@ -12,15 +12,18 @@ import {
   profile,
   skills,
 } from "./data/portfolio";
-import { DEFAULT_STYLE, STYLE_COOKIE, type PortfolioStyle } from "./styleConfig";
+import {
+  DEFAULT_STYLE,
+  STYLE_COOKIE,
+  isPortfolioStyle,
+  type PortfolioStyle,
+} from "./styleConfig";
 
 export default async function Home() {
   const cookieStore = await cookies();
   const storedStyle = cookieStore.get(STYLE_COOKIE)?.value;
-  const hasChoice = storedStyle === "style-1" || storedStyle === "style-2";
-  const initialStyle: PortfolioStyle = hasChoice
-    ? (storedStyle as PortfolioStyle)
-    : DEFAULT_STYLE;
+  const hasChoice = isPortfolioStyle(storedStyle);
+  const initialStyle: PortfolioStyle = hasChoice ? storedStyle : DEFAULT_STYLE;
 
   return (
     <PortfolioClient

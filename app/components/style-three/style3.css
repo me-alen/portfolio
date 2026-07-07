@@ -1,0 +1,845 @@
+/*
+ * Style 3 — "Atelier"
+ * Premium editorial: warm paper, ink typography, serif italic accents,
+ * black cinematic finale. Mobile-first; desktop rules extend upward.
+ */
+
+/* Colors for the floating resume button (rendered outside the style
+   wrapper): ink over paper, the availability-badge sienna over the black
+   contact finale. */
+html[data-portfolio-style="style-3"] {
+  --resume-btn-color: #141412;
+  --resume-btn-dark-color: #f00000;
+}
+
+.portfolio-style-3 {
+  --s3-paper: #f2f0eb;
+  --s3-ink: #141412;
+  --s3-soft: #45423b;
+  --s3-muted: #6c685f;
+  --s3-line: rgba(20, 20, 18, 0.16);
+  --s3-line-strong: rgba(20, 20, 18, 0.34);
+  --s3-night: #0d0d0c;
+  --s3-bone: #f2f0eb;
+  --s3-bone-muted: rgba(242, 240, 235, 0.58);
+  --s3-bone-line: rgba(242, 240, 235, 0.18);
+  --s3-accent: #f00000;
+  --s3-display: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
+  --s3-serif: var(--font-style3-serif), Georgia, serif;
+  --s3-pad-x: clamp(20px, 5vw, 64px);
+
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--s3-paper);
+  color: var(--s3-ink);
+  font-family: var(--s3-display);
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.portfolio-style-3 *,
+.portfolio-style-3 *::before,
+.portfolio-style-3 *::after {
+  box-sizing: border-box;
+}
+
+.portfolio-style-3 ::selection {
+  background: var(--s3-ink);
+  color: var(--s3-paper);
+}
+
+.portfolio-style-3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portfolio-style-3 ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portfolio-style-3 :focus-visible {
+  outline: 1.5px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.s3-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Text-mask reveal plumbing. The padding/negative-margin pair keeps
+   descenders of low line-height type from being clipped at rest. */
+.s3-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+.s3-mask-word {
+  display: inline-block;
+  white-space: pre-wrap;
+  will-change: transform;
+}
+
+/* ---------- Nav ---------- */
+
+.s3-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 90;
+  display: flex;
+  gap: 20px;
+  padding: calc(20px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) 12px 20px;
+  mix-blend-mode: difference;
+}
+
+.s3-nav a {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.72;
+  transition: opacity 0.25s ease;
+}
+
+.s3-nav a:hover,
+.s3-nav a:focus-visible {
+  opacity: 1;
+}
+
+@media (max-width: 479px) {
+  .s3-nav-secondary {
+    display: none;
+  }
+}
+
+/* ---------- Shared section chrome ---------- */
+
+.s3-section {
+  padding: clamp(88px, 15vw, 176px) var(--s3-pad-x);
+  border-top: 1px solid var(--s3-line);
+}
+
+.s3-section[id],
+.s3-contact[id] {
+  scroll-margin-top: 24px;
+}
+
+.s3-head {
+  margin-bottom: clamp(44px, 8vw, 104px);
+}
+
+.s3-kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 clamp(20px, 4vw, 36px);
+  color: var(--s3-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.s3-kicker::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--s3-accent);
+  flex: 0 0 auto;
+}
+
+/* Section titles are set in the display serif — normal case, roman first
+   line, italic second line — so the style reads editorial rather than
+   echoing Style 2's bold uppercase display. */
+.s3-title {
+  margin: 0;
+  font-weight: 400;
+}
+
+.s3-title-line {
+  display: block;
+  font-family: var(--s3-serif);
+  font-size: clamp(2.9rem, 10.5vw, 7.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+}
+
+.s3-title-italic {
+  font-style: italic;
+  padding-left: clamp(20px, 7vw, 140px);
+}
+
+/* Underline-reveal link */
+.s3-link {
+  position: relative;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.s3-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.35);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .s3-link:hover::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Small-caps metadata list separated by dots */
+.s3-tagline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  row-gap: 6px;
+  color: var(--s3-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.s3-tagline li::after {
+  content: "·";
+  margin: 0 10px;
+  color: var(--s3-line-strong);
+}
+
+.s3-tagline li:last-child::after {
+  content: none;
+}
+
+.s3-meta-label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--s3-muted);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ---------- Hero ---------- */
+
+.s3-hero {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  padding: calc(88px + env(safe-area-inset-top)) var(--s3-pad-x) clamp(20px, 4vh, 44px);
+}
+
+.s3-avail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--s3-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.s3-avail::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--s3-accent);
+  flex: 0 0 auto;
+  animation: s3-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes s3-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.s3-hero-middle {
+  margin: clamp(44px, 9vh, 96px) 0 auto;
+  max-width: 46ch;
+}
+
+.s3-hero-role {
+  margin: 0 0 14px;
+  color: var(--s3-ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.s3-hero-intro {
+  margin: 0;
+  color: var(--s3-soft);
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  line-height: 1.75;
+}
+
+.s3-hero-name {
+  margin: clamp(40px, 7vh, 88px) 0 clamp(28px, 5vh, 56px);
+  font-weight: 600;
+}
+
+.s3-hero-first {
+  display: block;
+  font-size: clamp(4rem, 19vw, 15rem);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.s3-hero-last {
+  display: block;
+  padding-left: clamp(28px, 12vw, 220px);
+  font-family: var(--s3-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(3.1rem, 15vw, 11.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+}
+
+.s3-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 44px;
+  border-top: 1px solid var(--s3-line);
+  padding-top: 18px;
+  font-size: 13px;
+}
+
+.s3-hero-scroll {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.s3-scroll-cue {
+  position: relative;
+  display: inline-block;
+  width: 1px;
+  height: 44px;
+  overflow: hidden;
+  background: var(--s3-line);
+}
+
+.s3-scroll-cue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--s3-ink);
+  transform: translateY(-100%);
+  animation: s3-cue 2.3s cubic-bezier(0.77, 0, 0.18, 1) infinite;
+}
+
+@keyframes s3-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  55% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* ---------- Works ---------- */
+
+.s3-work {
+  border-top: 1px solid var(--s3-line);
+  padding: clamp(40px, 7vw, 76px) 0;
+}
+
+.s3-work:last-of-type {
+  padding-bottom: 0;
+}
+
+.s3-work-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 18px;
+  margin-bottom: clamp(14px, 3vw, 24px);
+  color: var(--s3-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.s3-work-index {
+  color: var(--s3-accent);
+  font-family: var(--s3-serif);
+  font-style: italic;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.s3-work-title {
+  margin: 0 0 clamp(14px, 3vw, 22px);
+  font-family: var(--s3-serif);
+  font-size: clamp(2.1rem, 8vw, 4.8rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+
+.s3-work-desc {
+  margin: 0 0 clamp(18px, 3vw, 26px);
+  max-width: 62ch;
+  color: var(--s3-soft);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  line-height: 1.75;
+}
+
+.s3-work-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  margin-top: clamp(18px, 3vw, 26px);
+}
+
+/* ---------- About ---------- */
+
+.s3-lead {
+  margin: 0 0 clamp(56px, 10vw, 120px);
+  max-width: 1080px;
+  font-size: clamp(1.35rem, 4vw, 2.35rem);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+}
+
+.s3-lead-word {
+  display: inline;
+}
+
+.s3-about-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 7vw, 72px);
+}
+
+.s3-about-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.s3-rail-block {
+  border-top: 1px solid var(--s3-line);
+  padding-top: 14px;
+}
+
+.s3-rail-value {
+  display: block;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--s3-soft);
+}
+
+.s3-about-body p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--s3-soft);
+  font-size: clamp(0.95rem, 2vw, 1.08rem);
+  line-height: 1.85;
+}
+
+/* Paragraphs sit inside reveal wrappers, so space the wrappers. */
+.s3-about-body > * + * {
+  margin-top: 24px;
+}
+
+/* ---------- Experience ---------- */
+
+.s3-exp-item {
+  border-top: 1px solid var(--s3-line);
+  padding: clamp(40px, 7vw, 72px) 0;
+}
+
+.s3-exp-item:last-of-type {
+  padding-bottom: 0;
+}
+
+.s3-exp-period {
+  margin: 0 0 10px;
+  color: var(--s3-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.s3-exp-company {
+  margin: 0 0 8px;
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.s3-exp-location {
+  margin: 0;
+  color: var(--s3-muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.s3-exp-body {
+  margin-top: clamp(22px, 4vw, 0px);
+}
+
+.s3-exp-role {
+  margin: 0 0 12px;
+  font-family: var(--s3-serif);
+  font-style: italic;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  line-height: 1.25;
+}
+
+.s3-exp-summary {
+  margin: 0 0 clamp(20px, 3vw, 28px);
+  max-width: 62ch;
+  color: var(--s3-soft);
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.8;
+}
+
+.s3-exp-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: clamp(22px, 3vw, 30px);
+}
+
+/* The dash lives on the reveal wrapper (the li's only child) so it fades in
+   together with the bullet text instead of appearing ahead of it. */
+.s3-exp-bullets li > div {
+  position: relative;
+  padding-left: 28px;
+  max-width: 68ch;
+  color: var(--s3-soft);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.s3-exp-bullets li > div::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--s3-accent);
+}
+
+/* ---------- Capabilities ---------- */
+
+.s3-cap-row {
+  border-top: 1px solid var(--s3-line);
+  padding: clamp(32px, 6vw, 56px) 0;
+}
+
+.s3-cap-row:last-of-type {
+  padding-bottom: 0;
+}
+
+.s3-cap-title {
+  margin: 0 0 18px;
+  font-family: var(--s3-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  line-height: 1.2;
+}
+
+.s3-cap-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.s3-cap-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 16px;
+  border: 1px solid var(--s3-line);
+  border-radius: 999px;
+  font-size: clamp(0.9rem, 1.9vw, 1rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--s3-soft);
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+@media (hover: hover) {
+  .s3-cap-item:hover {
+    border-color: var(--s3-line-strong);
+    color: var(--s3-ink);
+  }
+}
+
+.s3-cap-icon {
+  flex: 0 0 auto;
+  opacity: 0.82;
+}
+
+/* ---------- Contact finale ---------- */
+
+.s3-contact {
+  margin-top: clamp(48px, 8vw, 112px);
+  border-radius: clamp(20px, 4vw, 40px) clamp(20px, 4vw, 40px) 0 0;
+  background: var(--s3-night);
+  color: var(--s3-bone);
+  padding: clamp(96px, 16vw, 190px) var(--s3-pad-x) 0;
+}
+
+.s3-contact .s3-kicker {
+  color: var(--s3-bone-muted);
+}
+
+.s3-contact-note {
+  margin: clamp(28px, 5vw, 44px) 0 0;
+  max-width: 46ch;
+  color: var(--s3-bone-muted);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  line-height: 1.75;
+}
+
+.s3-contact-email-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px 32px;
+  margin-top: clamp(36px, 6vw, 64px);
+}
+
+.s3-contact-email {
+  display: inline-block;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--s3-bone-line);
+  font-size: clamp(1.35rem, 5.8vw, 3.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  transition: border-color 0.35s ease;
+}
+
+.s3-contact-email:hover,
+.s3-contact-email:focus-visible {
+  border-color: var(--s3-bone);
+}
+
+.s3-copy-btn {
+  min-height: 42px;
+  padding: 9px 20px;
+  border: 1px solid var(--s3-bone-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--s3-bone-muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.s3-copy-btn:hover,
+.s3-copy-btn:focus-visible {
+  border-color: var(--s3-bone);
+  color: var(--s3-bone);
+}
+
+.s3-contact-grid {
+  margin: clamp(56px, 10vw, 110px) 0 0;
+  border-top: 1px solid var(--s3-bone-line);
+}
+
+.s3-contact-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--s3-bone-line);
+}
+
+.s3-contact-row dt {
+  color: var(--s3-bone-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.s3-contact-row dd {
+  margin: 0;
+  font-size: 14px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.s3-contact-row dd a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.s3-contact-arrow {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .s3-contact-row dd a:hover .s3-contact-arrow {
+    transform: translate(3px, -3px);
+  }
+}
+
+.s3-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-top: clamp(48px, 8vw, 96px);
+  /* Right padding keeps "Back to top" clear of the floating resume button. */
+  padding: 26px clamp(88px, 12vw, 128px) calc(26px + env(safe-area-inset-bottom)) 0;
+  color: var(--s3-bone-muted);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.s3-top-btn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.s3-top-btn:hover,
+.s3-top-btn:focus-visible {
+  color: var(--s3-bone);
+}
+
+/* ---------- Desktop enhancements ---------- */
+
+@media (min-width: 900px) {
+  .s3-hero-middle {
+    margin-left: auto;
+    margin-right: clamp(0px, 4vw, 56px);
+  }
+
+  .s3-work-inner {
+    max-width: 860px;
+  }
+
+  .s3-work:nth-of-type(even) .s3-work-inner {
+    margin-left: auto;
+  }
+
+  .s3-about-grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.6fr);
+    gap: 72px;
+    align-items: start;
+  }
+
+  .s3-about-rail {
+    position: sticky;
+    top: 110px;
+  }
+
+  .s3-exp-item {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.9fr) minmax(0, 1.8fr);
+    gap: 64px;
+    align-items: start;
+  }
+
+  .s3-exp-rail {
+    position: sticky;
+    top: 110px;
+  }
+
+  .s3-exp-body {
+    margin-top: 0;
+  }
+
+  .s3-cap-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.6fr);
+    gap: 48px;
+    align-items: baseline;
+  }
+
+  .s3-cap-title {
+    margin-bottom: 0;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .s3-avail::before,
+  .s3-scroll-cue::after {
+    animation: none;
+  }
+
+  .s3-scroll-cue::after {
+    transform: translateY(0);
+  }
+}

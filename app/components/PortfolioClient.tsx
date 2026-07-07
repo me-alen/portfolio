@@ -9,6 +9,7 @@ import type {
 } from "../data/portfolio";
 import PortfolioStyleOne from "./PortfolioStyleOne";
 import PortfolioStyleTwo from "./PortfolioStyleTwo";
+import PortfolioStyleThree from "./PortfolioStyleThree";
 import StyleIntroOverlay from "./StyleIntroOverlay";
 import StyleSwitcher from "./StyleSwitcher";
 import { getInitials } from "./style-two/helpers";
@@ -75,6 +76,19 @@ export default function PortfolioClient({
     };
   }, []);
 
+  // Expose the active style to elements outside this tree (e.g. the floating
+  // resume button in the root layout) so they can adapt their colors.
+  useEffect(() => {
+    document.documentElement.dataset.portfolioStyle = displayStyle;
+  }, [displayStyle]);
+
+  const projectGroups = [
+    { label: "Company Projects", projects: companyProjects },
+    { label: "Personal Projects", projects: personalProjects },
+    { label: "Client Projects", projects: clientProjects },
+    { label: "Fun Projects", projects: funProjects },
+  ];
+
   const selectStyle = (next: PortfolioStyle) => {
     setStyle(next);
     document.cookie = `${STYLE_COOKIE}=${next}; path=/; max-age=${STYLE_COOKIE_MAX_AGE}; samesite=lax`;
@@ -102,19 +116,24 @@ export default function PortfolioClient({
           transition: `opacity ${PAGE_FADE_MS}ms ease`,
         }}
       >
-        {displayStyle === "style-2" ? (
+        {displayStyle === "style-3" ? (
+          <PortfolioStyleThree
+            profile={profile}
+            skills={skills}
+            languages={languages}
+            education={education}
+            experience={experience}
+            projectGroups={projectGroups}
+            contact={contact}
+          />
+        ) : displayStyle === "style-2" ? (
           <PortfolioStyleTwo
             profile={profile}
             skills={skills}
             languages={languages}
             education={education}
             experience={experience}
-            projectGroups={[
-              { label: "Company Projects", projects: companyProjects },
-              { label: "Personal Projects", projects: personalProjects },
-              { label: "Client Projects", projects: clientProjects },
-              { label: "Fun Projects", projects: funProjects },
-            ]}
+            projectGroups={projectGroups}
             contact={contact}
           />
         ) : (

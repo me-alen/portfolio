@@ -47,15 +47,46 @@ export default function StyleSwitcher({
   }, [open]);
 
   const isStyle2 = currentStyle === "style-2";
-  const accent = isStyle2 ? "#c8f542" : "#818cf8";
-  const logoColor = isStyle2 ? "#f0ede8" : "var(--foreground)";
-  const panelBg = isStyle2 ? "rgba(16, 17, 16, 0.95)" : "var(--card-bg)";
-  const panelBorder = isStyle2 ? "rgba(200, 245, 66, 0.35)" : "var(--border-color)";
-  const panelText = isStyle2 ? "#f0ede8" : "var(--foreground)";
+  const isStyle3 = currentStyle === "style-3";
+  const accent = isStyle2 ? "#c8f542" : isStyle3 ? "#f00000" : "#818cf8";
+  // Style 3 renders the initials in white with blend-mode "difference" so the
+  // logo stays legible over both its paper hero and its black contact finale.
+  // The blend must sit on the fixed root (a stacking context isolates its
+  // children's blending) and is dropped while the panel is open so the panel
+  // keeps its real colors; the logo then falls back to ink over the panel.
+  const blendLogo = isStyle3 && !open;
+  const logoColor = isStyle2
+    ? "#f0ede8"
+    : isStyle3
+      ? blendLogo
+        ? "#ffffff"
+        : "#141412"
+      : "var(--foreground)";
+  const panelBg = isStyle2
+    ? "rgba(16, 17, 16, 0.95)"
+    : isStyle3
+      ? "rgba(244, 242, 237, 0.97)"
+      : "var(--card-bg)";
+  const panelBorder = isStyle2
+    ? "rgba(200, 245, 66, 0.35)"
+    : isStyle3
+      ? "rgba(20, 20, 18, 0.18)"
+      : "var(--border-color)";
+  const panelText = isStyle2
+    ? "#f0ede8"
+    : isStyle3
+      ? "#141412"
+      : "var(--foreground)";
   const activeBg = isStyle2
     ? "rgba(200, 245, 66, 0.14)"
-    : "rgba(99, 102, 241, 0.14)";
-  const hoverBg = isStyle2 ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.05)";
+    : isStyle3
+      ? "rgba(164, 80, 44, 0.12)"
+      : "rgba(99, 102, 241, 0.14)";
+  const hoverBg = isStyle2
+    ? "rgba(255, 255, 255, 0.06)"
+    : isStyle3
+      ? "rgba(20, 20, 18, 0.06)"
+      : "rgba(0, 0, 0, 0.05)";
 
   const handleSelect = (id: PortfolioStyle) => {
     onSelect(id);
@@ -63,7 +94,11 @@ export default function StyleSwitcher({
   };
 
   return (
-    <div ref={rootRef} className="fixed left-6 top-5 z-[1150] sm:left-12">
+    <div
+      ref={rootRef}
+      className="fixed left-6 top-5 z-[1150] sm:left-12"
+      style={{ mixBlendMode: blendLogo ? "difference" : undefined }}
+    >
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -87,7 +122,7 @@ export default function StyleSwitcher({
         }}
       >
         {initials}
-        <span style={{ color: accent }}>.</span>
+        <span style={{ color: blendLogo ? "#ffffff" : accent }}>.</span>
       </button>
 
       {open ? (
@@ -113,7 +148,11 @@ export default function StyleSwitcher({
         >
           <div
             style={{
-              color: isStyle2 ? "#96928b" : "var(--subtle-foreground)",
+              color: isStyle2
+                ? "#96928b"
+                : isStyle3
+                  ? "#6c685f"
+                  : "var(--subtle-foreground)",
               fontSize: 10,
               fontWeight: 700,
               letterSpacing: "0.12em",
