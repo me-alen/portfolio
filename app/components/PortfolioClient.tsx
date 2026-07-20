@@ -11,6 +11,13 @@ import GameOverlay from "./GameOverlay";
 import PortfolioStyleOne from "./PortfolioStyleOne";
 import PortfolioStyleTwo from "./PortfolioStyleTwo";
 import PortfolioStyleThree from "./PortfolioStyleThree";
+import PortfolioStyleFour from "./PortfolioStyleFour";
+import PortfolioStyleFive from "./PortfolioStyleFive";
+import PortfolioStyleSix from "./PortfolioStyleSix";
+import PortfolioStyleSeven from "./PortfolioStyleSeven";
+import PortfolioStyleEight from "./PortfolioStyleEight";
+import PortfolioStyleNine from "./PortfolioStyleNine";
+import PortfolioStyleTen from "./PortfolioStyleTen";
 import StyleIntroOverlay from "./StyleIntroOverlay";
 import StyleSwitcher from "./StyleSwitcher";
 import { getInitials } from "./style-two/helpers";
@@ -89,6 +96,7 @@ export default function PortfolioClient({
     document.documentElement.dataset.portfolioStyle = displayStyle;
   }, [displayStyle]);
 
+
   const projectGroups = [
     { label: "Company Projects", projects: companyProjects },
     { label: "Personal Projects", projects: personalProjects },
@@ -123,39 +131,52 @@ export default function PortfolioClient({
           transition: `opacity ${PAGE_FADE_MS}ms ease`,
         }}
       >
-        {displayStyle === "style-3" ? (
-          <PortfolioStyleThree
-            profile={profile}
-            skills={skills}
-            languages={languages}
-            education={education}
-            experience={experience}
-            projectGroups={projectGroups}
-            contact={contact}
-          />
-        ) : displayStyle === "style-2" ? (
-          <PortfolioStyleTwo
-            profile={profile}
-            skills={skills}
-            languages={languages}
-            education={education}
-            experience={experience}
-            projectGroups={projectGroups}
-            contact={contact}
-          />
-        ) : (
-          <PortfolioStyleOne
-            profile={profile}
-            skills={skills}
-            education={education}
-            experience={experience}
-            companyProjects={companyProjects}
-            personalProjects={personalProjects}
-            clientProjects={clientProjects}
-            funProjects={funProjects}
-            contact={contact}
-          />
-        )}
+        {(() => {
+          const pageProps = {
+            profile,
+            skills,
+            languages,
+            education,
+            experience,
+            projectGroups,
+            contact,
+          };
+
+          switch (displayStyle) {
+            case "style-2":
+              return <PortfolioStyleTwo {...pageProps} />;
+            case "style-3":
+              return <PortfolioStyleThree {...pageProps} />;
+            case "style-4":
+              return <PortfolioStyleFour {...pageProps} />;
+            case "style-5":
+              return <PortfolioStyleFive {...pageProps} />;
+            case "style-6":
+              return <PortfolioStyleSix {...pageProps} />;
+            case "style-7":
+              return <PortfolioStyleSeven {...pageProps} />;
+            case "style-8":
+              return <PortfolioStyleEight {...pageProps} />;
+            case "style-9":
+              return <PortfolioStyleNine {...pageProps} />;
+            case "style-10":
+              return <PortfolioStyleTen {...pageProps} />;
+            default:
+              return (
+                <PortfolioStyleOne
+                  profile={profile}
+                  skills={skills}
+                  education={education}
+                  experience={experience}
+                  companyProjects={companyProjects}
+                  personalProjects={personalProjects}
+                  clientProjects={clientProjects}
+                  funProjects={funProjects}
+                  contact={contact}
+                />
+              );
+          }
+        })()}
       </div>
       <StyleSwitcher
         initials={getInitials(profile.name)}

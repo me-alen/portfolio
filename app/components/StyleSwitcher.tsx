@@ -13,6 +13,125 @@ type StyleSwitcherProps = {
   onPlayGame: () => void;
 };
 
+type SwitcherTheme = {
+  accent: string;
+  logo: string;
+  panelBg: string;
+  panelBorder: string;
+  panelText: string;
+  activeBg: string;
+  hoverBg: string;
+  label: string;
+  /** Render the closed-state logo white with blend-mode "difference" so it
+   *  stays legible over both light and dark regions of the page. */
+  blendLogo?: boolean;
+};
+
+const DEFAULT_THEME: SwitcherTheme = {
+  accent: "#818cf8",
+  logo: "var(--foreground)",
+  panelBg: "var(--card-bg)",
+  panelBorder: "var(--border-color)",
+  panelText: "var(--foreground)",
+  activeBg: "rgba(99, 102, 241, 0.14)",
+  hoverBg: "rgba(0, 0, 0, 0.05)",
+  label: "var(--subtle-foreground)",
+};
+
+const SWITCHER_THEMES: Partial<Record<PortfolioStyle, SwitcherTheme>> = {
+  "style-2": {
+    accent: "#c8f542",
+    logo: "#f0ede8",
+    panelBg: "rgba(16, 17, 16, 0.95)",
+    panelBorder: "rgba(200, 245, 66, 0.35)",
+    panelText: "#f0ede8",
+    activeBg: "rgba(200, 245, 66, 0.14)",
+    hoverBg: "rgba(255, 255, 255, 0.06)",
+    label: "#96928b",
+  },
+  "style-3": {
+    accent: "#f00000",
+    logo: "#141412",
+    panelBg: "rgba(244, 242, 237, 0.97)",
+    panelBorder: "rgba(20, 20, 18, 0.18)",
+    panelText: "#141412",
+    activeBg: "rgba(164, 80, 44, 0.12)",
+    hoverBg: "rgba(20, 20, 18, 0.06)",
+    label: "#6c685f",
+    blendLogo: true,
+  },
+  "style-4": {
+    accent: "#e63946",
+    logo: "#17130d",
+    panelBg: "rgba(253, 243, 224, 0.97)",
+    panelBorder: "#17130d",
+    panelText: "#17130d",
+    activeBg: "rgba(230, 57, 70, 0.14)",
+    hoverBg: "rgba(23, 19, 13, 0.06)",
+    label: "#8a7f6a",
+  },
+  "style-5": {
+    accent: "#c9a96a",
+    logo: "#ede6d8",
+    panelBg: "rgba(11, 10, 8, 0.95)",
+    panelBorder: "rgba(201, 169, 106, 0.4)",
+    panelText: "#ede6d8",
+    activeBg: "rgba(201, 169, 106, 0.16)",
+    hoverBg: "rgba(255, 255, 255, 0.06)",
+    label: "#8d8474",
+  },
+  "style-6": {
+    accent: "#ff2e00",
+    logo: "#0a0a0a",
+    panelBg: "rgba(255, 255, 255, 0.97)",
+    panelBorder: "#0a0a0a",
+    panelText: "#0a0a0a",
+    activeBg: "rgba(255, 46, 0, 0.12)",
+    hoverBg: "rgba(0, 0, 0, 0.05)",
+    label: "#6b6b6b",
+  },
+  "style-7": {
+    accent: "#3554ff",
+    logo: "#14151a",
+    panelBg: "rgba(255, 255, 255, 0.97)",
+    panelBorder: "#d8d8cd",
+    panelText: "#14151a",
+    activeBg: "rgba(53, 84, 255, 0.1)",
+    hoverBg: "rgba(20, 21, 26, 0.05)",
+    label: "#5d6069",
+  },
+  "style-8": {
+    accent: "#ff8fab",
+    logo: "#3a2e39",
+    panelBg: "rgba(255, 245, 250, 0.97)",
+    panelBorder: "#3a2e39",
+    panelText: "#3a2e39",
+    activeBg: "rgba(255, 143, 171, 0.2)",
+    hoverBg: "rgba(58, 46, 57, 0.06)",
+    label: "#6d5a6c",
+  },
+  "style-9": {
+    accent: "#33ff66",
+    logo: "#33ff66",
+    panelBg: "rgba(7, 11, 20, 0.96)",
+    panelBorder: "rgba(51, 255, 102, 0.45)",
+    panelText: "#33ff66",
+    activeBg: "rgba(51, 255, 102, 0.14)",
+    hoverBg: "rgba(51, 255, 102, 0.08)",
+    label: "rgba(51, 255, 102, 0.6)",
+  },
+  "style-10": {
+    accent: "#ffd166",
+    logo: "#f4f7ff",
+    panelBg: "rgba(18, 42, 105, 0.96)",
+    panelBorder: "rgba(244, 247, 255, 0.35)",
+    panelText: "#f4f7ff",
+    activeBg: "rgba(255, 209, 102, 0.15)",
+    hoverBg: "rgba(255, 255, 255, 0.07)",
+    label: "rgba(244, 247, 255, 0.6)",
+  },
+};
+
 export default function StyleSwitcher({
   initials,
   currentStyle,
@@ -48,47 +167,13 @@ export default function StyleSwitcher({
     };
   }, [open]);
 
-  const isStyle2 = currentStyle === "style-2";
-  const isStyle3 = currentStyle === "style-3";
-  const accent = isStyle2 ? "#c8f542" : isStyle3 ? "#f00000" : "#818cf8";
-  // Style 3 renders the initials in white with blend-mode "difference" so the
-  // logo stays legible over both its paper hero and its black contact finale.
+  const theme = SWITCHER_THEMES[currentStyle] ?? DEFAULT_THEME;
+  const { accent, panelBg, panelBorder, panelText, activeBg, hoverBg } = theme;
   // The blend must sit on the fixed root (a stacking context isolates its
   // children's blending) and is dropped while the panel is open so the panel
-  // keeps its real colors; the logo then falls back to ink over the panel.
-  const blendLogo = isStyle3 && !open;
-  const logoColor = isStyle2
-    ? "#f0ede8"
-    : isStyle3
-      ? blendLogo
-        ? "#ffffff"
-        : "#141412"
-      : "var(--foreground)";
-  const panelBg = isStyle2
-    ? "rgba(16, 17, 16, 0.95)"
-    : isStyle3
-      ? "rgba(244, 242, 237, 0.97)"
-      : "var(--card-bg)";
-  const panelBorder = isStyle2
-    ? "rgba(200, 245, 66, 0.35)"
-    : isStyle3
-      ? "rgba(20, 20, 18, 0.18)"
-      : "var(--border-color)";
-  const panelText = isStyle2
-    ? "#f0ede8"
-    : isStyle3
-      ? "#141412"
-      : "var(--foreground)";
-  const activeBg = isStyle2
-    ? "rgba(200, 245, 66, 0.14)"
-    : isStyle3
-      ? "rgba(164, 80, 44, 0.12)"
-      : "rgba(99, 102, 241, 0.14)";
-  const hoverBg = isStyle2
-    ? "rgba(255, 255, 255, 0.06)"
-    : isStyle3
-      ? "rgba(20, 20, 18, 0.06)"
-      : "rgba(0, 0, 0, 0.05)";
+  // keeps its real colors; the logo then falls back to its solid color.
+  const blendLogo = Boolean(theme.blendLogo) && !open;
+  const logoColor = blendLogo ? "#ffffff" : theme.logo;
 
   const handleSelect = (id: PortfolioStyle) => {
     onSelect(id);
@@ -142,7 +227,9 @@ export default function StyleSwitcher({
             flexDirection: "column",
             gap: 2,
             left: 0,
+            maxHeight: "calc(100vh - 90px)",
             minWidth: 172,
+            overflowY: "auto",
             padding: 6,
             position: "absolute",
             top: "calc(100% + 10px)",
@@ -150,11 +237,7 @@ export default function StyleSwitcher({
         >
           <div
             style={{
-              color: isStyle2
-                ? "#96928b"
-                : isStyle3
-                  ? "#6c685f"
-                  : "var(--subtle-foreground)",
+              color: theme.label,
               fontSize: 10,
               fontWeight: 700,
               letterSpacing: "0.12em",
@@ -259,6 +342,7 @@ export default function StyleSwitcher({
             </span>
             <span style={{ flex: 1 }}>Play Sand Drop</span>
           </button>
+
         </div>
       ) : null}
     </div>
