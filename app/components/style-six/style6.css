@@ -1,0 +1,315 @@
+/*
+ * Style 6 — "Swiss Grid"
+ * International typographic style: white ground, black Archivo,
+ * one red accent, ruled rows, numbered sections, lowercase headlines.
+ */
+
+html[data-portfolio-style="style-6"] {
+  --resume-btn-color: #0a0a0a;
+}
+
+.portfolio-style-6 {
+  --s6-white: #ffffff;
+  --s6-ink: #0a0a0a;
+  --s6-gray: #6b6b6b;
+  --s6-line: #dcdcdc;
+  --s6-red: #ff2e00;
+  --s6-sans: var(--font-style6-sans), Helvetica, Arial, sans-serif;
+  --s6-pad: clamp(16px, 4vw, 48px);
+
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--s6-white);
+  color: var(--s6-ink);
+  font-family: var(--s6-sans);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.portfolio-style-6 *,
+.portfolio-style-6 *::before,
+.portfolio-style-6 *::after {
+  box-sizing: border-box;
+}
+
+.portfolio-style-6 ::selection {
+  background: var(--s6-red);
+  color: #fff;
+}
+
+.portfolio-style-6 :where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portfolio-style-6 :where(ul) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portfolio-style-6 :focus-visible {
+  outline: 2px solid var(--s6-red);
+  outline-offset: 2px;
+}
+
+.s6-red {
+  color: var(--s6-red);
+}
+
+.s6-cap {
+  margin: 0 0 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--s6-gray);
+}
+
+.s6-val {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.s6-val-sm {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--s6-gray);
+}
+
+/* ---------- Fixed top bar ---------- */
+
+/* Solid strip behind the fixed AF monogram so scrolling content passes
+   underneath it instead of colliding with the logo. */
+.s6-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(52px + env(safe-area-inset-top));
+  background: var(--s6-white);
+  border-bottom: 1px solid var(--s6-ink);
+  z-index: 90;
+}
+
+/* ---------- Masthead ---------- */
+
+.s6-masthead {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 20px;
+  border-bottom: 2px solid var(--s6-ink);
+  padding: calc(64px + env(safe-area-inset-top)) var(--s6-pad) 18px;
+}
+
+/* ---------- Hero ---------- */
+
+.s6-hero {
+  border-bottom: 1px solid var(--s6-line);
+  padding: clamp(44px, 8vw, 96px) var(--s6-pad);
+}
+
+.s6-hero h1 {
+  margin: 0;
+  font-size: clamp(2.9rem, 12vw, 8.5rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+.s6-hero-intro {
+  max-width: 60ch;
+  margin: clamp(24px, 4vw, 40px) 0 0;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--s6-gray);
+}
+
+/* ---------- Sections ---------- */
+
+.s6-section {
+  border-bottom: 1px solid var(--s6-line);
+  padding: clamp(40px, 7vw, 80px) var(--s6-pad);
+}
+
+.s6-head {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  margin-bottom: clamp(24px, 4vw, 44px);
+}
+
+.s6-no {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--s6-red);
+}
+
+.s6-head h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 5vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* ---------- About ---------- */
+
+.s6-about-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.s6-about-grid p {
+  margin: 0;
+  max-width: 66ch;
+  font-size: 14.5px;
+  color: #333;
+}
+
+.s6-about-grid p:first-child {
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  font-weight: 600;
+  color: var(--s6-ink);
+}
+
+/* ---------- Ruled tables ---------- */
+
+.s6-table {
+  border-top: 1px solid var(--s6-ink);
+}
+
+.s6-row {
+  display: grid;
+  gap: 10px 24px;
+  border-bottom: 1px solid var(--s6-line);
+  padding: 18px 0;
+}
+
+.s6-row-no {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
+
+.s6-row-main h3 {
+  margin: 0 0 6px;
+  font-size: clamp(1.15rem, 3vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.s6-row-main p {
+  margin: 0 0 8px;
+  max-width: 62ch;
+  font-size: 13.5px;
+  color: #333;
+}
+
+.s6-row-links {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.s6-row-links a:hover {
+  color: var(--s6-red);
+}
+
+.s6-row-side .s6-stack,
+.s6-skill-list {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--s6-gray);
+}
+
+.s6-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.s6-bullets li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 13px;
+  color: #333;
+  max-width: 64ch;
+}
+
+.s6-bullets li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--s6-red);
+}
+
+/* ---------- Contact / footer ---------- */
+
+.s6-email {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  font-size: clamp(1.5rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+  border-bottom: 3px solid var(--s6-ink);
+  padding-bottom: 8px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.s6-email:hover {
+  color: var(--s6-red);
+  border-color: var(--s6-red);
+}
+
+.s6-contact-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin-top: clamp(24px, 4vw, 36px);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.s6-contact-grid a:hover {
+  color: var(--s6-red);
+}
+
+.s6-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  /* Right clearance keeps the footer clear of the floating resume button. */
+  padding: 20px clamp(96px, 12vw, 132px) calc(20px + env(safe-area-inset-bottom)) var(--s6-pad);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--s6-gray);
+}
+
+/* ---------- Desktop ---------- */
+
+@media (min-width: 760px) {
+  .s6-masthead {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .s6-row {
+    grid-template-columns: 120px minmax(0, 1fr) 220px;
+  }
+
+  .s6-row-skill {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .s6-about-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 
-import type { ProjectItem } from "../../data/portfolio";
+import type {
+  EducationItem,
+  ExperienceItem,
+  ProjectItem,
+} from "../../data/portfolio";
 
 export type Profile = {
   name: string;
@@ -20,6 +24,17 @@ export type Contact = {
 export type ProjectGroup = {
   label: string;
   projects: ProjectItem[];
+};
+
+/** Common prop shape shared by every full-page style root (style-2 onward). */
+export type StylePageProps = {
+  profile: Profile;
+  skills: string[];
+  languages: string[];
+  education: EducationItem[];
+  experience: ExperienceItem[];
+  projectGroups: ProjectGroup[];
+  contact: Contact;
 };
 
 export type DecoratedProject = ProjectItem & {

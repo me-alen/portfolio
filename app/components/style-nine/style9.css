@@ -1,0 +1,427 @@
+/*
+ * Style 9 — "Arcade"
+ * Retro CRT: deep navy ground, phosphor green + magenta, scanline
+ * overlay, pixel labels (Press Start 2P), VT323 terminal body.
+ */
+
+html[data-portfolio-style="style-9"] {
+  --resume-btn-color: #33ff66;
+}
+
+.portfolio-style-9 {
+  --s9-bg: #070b14;
+  --s9-panel: #0b1120;
+  --s9-green: #33ff66;
+  --s9-green-soft: rgba(51, 255, 102, 0.72);
+  --s9-magenta: #ff2bd6;
+  --s9-cyan: #2de2e6;
+  --s9-line: rgba(51, 255, 102, 0.35);
+  --s9-pixel: var(--font-style9-pixel), monospace;
+  --s9-mono: var(--font-style9-mono), "Courier New", monospace;
+
+  position: relative;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--s9-bg);
+  color: var(--s9-green);
+  font-family: var(--s9-mono);
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.portfolio-style-9 *,
+.portfolio-style-9 *::before,
+.portfolio-style-9 *::after {
+  box-sizing: border-box;
+}
+
+.portfolio-style-9 ::selection {
+  background: var(--s9-magenta);
+  color: #070b14;
+}
+
+.portfolio-style-9 :where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portfolio-style-9 :where(ul) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portfolio-style-9 :focus-visible {
+  outline: 2px solid var(--s9-cyan);
+  outline-offset: 3px;
+}
+
+/* CRT scanlines over everything, clicks pass through */
+.s9-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.22) 3px
+  );
+}
+
+.s9-pixel {
+  font-family: var(--s9-pixel);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+}
+
+.s9-blink {
+  animation: s9-blink 1.4s steps(2, start) infinite;
+}
+
+@keyframes s9-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s9-blink {
+    animation: none;
+  }
+}
+
+.s9-frame {
+  background: var(--s9-panel);
+  border: 2px solid var(--s9-line);
+  padding: clamp(16px, 3vw, 24px);
+  box-shadow: 0 0 0 2px #070b14, 4px 4px 0 2px rgba(51, 255, 102, 0.18);
+}
+
+.s9-btn {
+  display: inline-block;
+  border: 2px solid var(--s9-green);
+  padding: 10px 18px;
+  font-family: var(--s9-pixel);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  transition: background 0.12s steps(2), color 0.12s steps(2);
+}
+
+.s9-btn:hover,
+.s9-btn:focus-visible {
+  background: var(--s9-green);
+  color: #070b14;
+}
+
+.s9-btn-magenta {
+  border-color: var(--s9-magenta);
+  color: var(--s9-magenta);
+}
+
+.s9-btn-magenta:hover,
+.s9-btn-magenta:focus-visible {
+  background: var(--s9-magenta);
+  color: #070b14;
+}
+
+.s9-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.s9-chips li {
+  border: 1px solid var(--s9-line);
+  padding: 2px 10px;
+  font-size: 16px;
+  color: var(--s9-green-soft);
+}
+
+/* ---------- Hero ---------- */
+
+.s9-hero {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: calc(96px + env(safe-area-inset-top)) clamp(18px, 5vw, 48px) clamp(40px, 6vw, 64px);
+  text-align: center;
+}
+
+.s9-hero .s9-pixel {
+  color: var(--s9-cyan);
+}
+
+.s9-name {
+  margin: 18px 0 0;
+  font-family: var(--s9-mono);
+  font-weight: 400;
+  font-size: clamp(3.2rem, 13vw, 7.5rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 12px rgba(51, 255, 102, 0.55),
+    3px 3px 0 rgba(255, 43, 214, 0.55);
+}
+
+.s9-class {
+  margin: 14px 0 0;
+  font-size: 20px;
+  color: var(--s9-magenta);
+}
+
+.s9-hero-frame {
+  max-width: 620px;
+  margin: 26px auto 0;
+  text-align: left;
+}
+
+.s9-hero-frame p {
+  margin: 0;
+  color: var(--s9-green-soft);
+}
+
+.s9-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+/* ---------- Sections ---------- */
+
+.s9-section {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(36px, 6vw, 64px) clamp(18px, 5vw, 48px);
+  border-top: 1px dashed var(--s9-line);
+}
+
+.s9-h2 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 clamp(22px, 4vw, 34px);
+  font-family: var(--s9-mono);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 5.5vw, 2.9rem);
+  text-transform: uppercase;
+  line-height: 1.05;
+}
+
+.s9-h2 .s9-pixel {
+  color: var(--s9-magenta);
+  font-size: 10px;
+}
+
+.s9-bio {
+  margin: 0 0 16px;
+  color: var(--s9-green-soft);
+}
+
+.s9-bio:last-child {
+  margin-bottom: 0;
+}
+
+.s9-hud {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.s9-hud-item p {
+  margin: 0;
+  color: var(--s9-green-soft);
+  font-size: 17px;
+}
+
+.s9-hud-label {
+  color: var(--s9-cyan);
+  margin-bottom: 6px;
+}
+
+/* ---------- Inventory ---------- */
+
+.s9-inv-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.s9-inv-title {
+  margin: 0;
+  color: var(--s9-cyan);
+  font-size: 10px;
+}
+
+/* ---------- Quest log ---------- */
+
+.s9-quests,
+.s9-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.s9-quest-period {
+  margin: 0 0 10px;
+  color: var(--s9-magenta);
+  font-size: 9px;
+}
+
+.s9-quest-title,
+.s9-score-title {
+  margin: 0 0 4px;
+  font-family: var(--s9-mono);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.s9-quest-role {
+  margin: 0 0 12px;
+  color: var(--s9-cyan);
+  font-size: 18px;
+}
+
+.s9-quest-summary,
+.s9-score-desc {
+  margin: 0 0 12px;
+  color: var(--s9-green-soft);
+  font-size: 18px;
+}
+
+.s9-log {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.s9-log li {
+  position: relative;
+  padding-left: 22px;
+  color: var(--s9-green-soft);
+  font-size: 17px;
+}
+
+.s9-log li::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: var(--s9-magenta);
+}
+
+/* ---------- High scores ---------- */
+
+.s9-score-rank {
+  margin: 0 0 10px;
+  color: var(--s9-cyan);
+  font-size: 9px;
+}
+
+.s9-score-stack {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(45, 226, 230, 0.8);
+}
+
+.s9-score-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ---------- Contact / footer ---------- */
+
+.s9-contact {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(48px, 8vw, 88px) clamp(18px, 5vw, 48px) clamp(72px, 10vw, 112px);
+  border-top: 1px dashed var(--s9-line);
+  text-align: center;
+}
+
+.s9-contact .s9-pixel {
+  color: var(--s9-magenta);
+}
+
+.s9-contact-title {
+  margin: 14px 0 26px;
+  font-family: var(--s9-mono);
+  font-weight: 400;
+  font-size: clamp(2rem, 7vw, 3.8rem);
+  text-transform: uppercase;
+  line-height: 1.05;
+  text-shadow: 0 0 12px rgba(51, 255, 102, 0.45);
+}
+
+.s9-email {
+  display: inline-block;
+  border: 2px solid var(--s9-green);
+  padding: 14px 22px;
+  font-size: clamp(1.2rem, 4.5vw, 1.9rem);
+  overflow-wrap: anywhere;
+  transition: background 0.12s steps(2), color 0.12s steps(2);
+}
+
+.s9-email:hover {
+  background: var(--s9-green);
+  color: #070b14;
+}
+
+.s9-email:hover .s9-cursor {
+  color: #070b14;
+}
+
+.s9-cursor {
+  animation: s9-blink 1s steps(2, start) infinite;
+  color: var(--s9-magenta);
+}
+
+.s9-contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 30px;
+  margin-top: 26px;
+  font-size: 18px;
+  color: var(--s9-cyan);
+}
+
+.s9-contact-links a:hover {
+  color: var(--s9-magenta);
+}
+
+.s9-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  border-top: 2px solid var(--s9-line);
+  /* Right clearance keeps the footer clear of the floating resume button. */
+  padding: 20px clamp(96px, 12vw, 132px) calc(20px + env(safe-area-inset-bottom)) clamp(18px, 5vw, 48px);
+  font-size: 16px;
+  color: var(--s9-green-soft);
+}
+
+.s9-footer .s9-pixel {
+  font-size: 9px;
+  color: var(--s9-magenta);
+}
+
+/* ---------- Desktop ---------- */
+
+@media (min-width: 760px) {
+  .s9-hud {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .s9-inv-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

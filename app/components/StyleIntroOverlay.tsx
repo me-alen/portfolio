@@ -90,8 +90,11 @@ export default function StyleIntroOverlay({
         style={{
           boxSizing: "border-box",
           color: "#f0ede8",
-          maxWidth: 420,
+          maxHeight: "100%",
+          maxWidth: 520,
           opacity: contentVisible ? 1 : 0,
+          overflowY: "auto",
+          padding: "4px 2px",
           textAlign: "center",
           transform: contentVisible ? "translateY(0)" : "translateY(8px)",
           transition: `opacity ${STEP_FADE_MS}ms ease, transform ${STEP_FADE_MS}ms ease`,
@@ -174,7 +177,13 @@ export default function StyleIntroOverlay({
               to get started.
             </p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div
+              style={{
+                display: "grid",
+                gap: 10,
+                gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+              }}
+            >
               {STYLE_OPTIONS.map((option, index) => {
                 const isHover = hovered === option.id;
 
@@ -196,10 +205,10 @@ export default function StyleIntroOverlay({
                       color: "#f0ede8",
                       cursor: "pointer",
                       display: "flex",
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: 600,
-                      gap: 12,
-                      padding: "14px 16px",
+                      gap: 11,
+                      padding: "11px 13px",
                       textAlign: "left",
                       transition: "background 0.15s ease",
                       width: "100%",
@@ -208,13 +217,27 @@ export default function StyleIntroOverlay({
                     <span
                       aria-hidden="true"
                       style={{
-                        background: option.swatch,
-                        borderRadius: 999,
+                        background: option.tileBg,
+                        border: "1px solid rgba(255, 255, 255, 0.28)",
+                        borderRadius: 6,
                         flex: "0 0 auto",
-                        height: 12,
-                        width: 12,
+                        height: 24,
+                        overflow: "hidden",
+                        position: "relative",
+                        width: 36,
                       }}
-                    />
+                    >
+                      <span
+                        style={{
+                          background: option.swatch,
+                          bottom: 0,
+                          position: "absolute",
+                          right: 0,
+                          top: 0,
+                          width: 12,
+                        }}
+                      />
+                    </span>
                     <span style={{ flex: 1 }}>{option.label}</span>
                   </button>
                 );

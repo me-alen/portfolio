@@ -49,12 +49,12 @@ html[data-portfolio-style="style-3"] {
   color: var(--s3-paper);
 }
 
-.portfolio-style-3 a {
+.portfolio-style-3 :where(a) {
   color: inherit;
   text-decoration: none;
 }
 
-.portfolio-style-3 ul {
+.portfolio-style-3 :where(ul) {
   margin: 0;
   padding: 0;
   list-style: none;
