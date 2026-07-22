@@ -79,8 +79,8 @@ export default function PortfolioClient({
 
   // The playable game popup reuses the live deployment already listed in the
   // fun-projects data, so the URL has a single source of truth.
-  const sandDrop = funProjects.find((project) => project.title === "Sand Drop");
-  const sandDropUrl = sandDrop?.liveUrl ?? "https://sand-drop.vercel.app";
+  const pourAnOcean = funProjects.find((project) => project.title === "Pour an Ocean");
+  const pourAnOceanUrl = pourAnOcean?.liveUrl ?? "https://pour-an-ocean.vercel.app";
 
   useEffect(() => {
     return () => {
@@ -193,8 +193,8 @@ export default function PortfolioClient({
       ) : null}
       {gameOpen ? (
         <GameOverlay
-          title="Sand Drop"
-          url={sandDropUrl}
+          title="Pour an Ocean"
+          url={pourAnOceanUrl}
           onClose={() => setGameOpen(false)}
         />
       ) : null}

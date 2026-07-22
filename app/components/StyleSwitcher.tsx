@@ -340,7 +340,7 @@ export default function StyleSwitcher({
             >
               ▶
             </span>
-            <span style={{ flex: 1 }}>Play Sand Drop</span>
+            <span style={{ flex: 1 }}>Play Pour an Ocean</span>
           </button>
 
         </div>

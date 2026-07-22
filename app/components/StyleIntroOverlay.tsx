@@ -303,7 +303,7 @@ export default function StyleIntroOverlay({
               <span aria-hidden="true" style={{ fontSize: 11 }}>
                 ▶
               </span>
-              Play Sand Drop — a game I built
+              Play Pour an Ocean — a game I built
             </button>
           </>
         )}

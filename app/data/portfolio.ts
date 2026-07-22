@@ -262,13 +262,13 @@ export const funProjects: ProjectItem[] = [
     liveUrl: "https://dvd-bounce-mu.vercel.app",
   },
   {
-    title: "Sand Drop",
+    title: "Pour an Ocean",
     description:
       "A creative React/TypeScript sandbox project focused on experimentation with UI behavior, visuals, and interaction ideas.",
     stack: ["TypeScript", "React", "SCSS"],
     period: "Fun Project",
-    githubUrl: "https://github.com/me-alen/sand-drop",
-    liveUrl: "https://sand-drop.vercel.app",
+    githubUrl: "https://github.com/me-alen/pour-an-ocean",
+    liveUrl: "https://pour-an-ocean.vercel.app",
   },
 ];
 
