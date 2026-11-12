@@ -8,7 +8,8 @@ export type PortfolioStyle =
   | "style-7"
   | "style-8"
   | "style-9"
-  | "style-10";
+  | "style-10"
+  | "style-11";
 
 export const STYLE_COOKIE = "portfolio-style";
 export const STYLE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -33,6 +34,7 @@ export const STYLE_OPTIONS: StyleOption[] = [
   { id: "style-8", label: "Bubblegum", swatch: "#ff8fab", tileBg: "#fff5fa" },
   { id: "style-9", label: "Arcade", swatch: "#33ff66", tileBg: "#070b14" },
   { id: "style-10", label: "Blueprint", swatch: "#f4f7ff", tileBg: "#1c3d8f" },
+  { id: "style-11", label: "Crimson", swatch: "#ef4444", tileBg: "#050505" },
 ];
 
 export function isPortfolioStyle(

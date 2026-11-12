@@ -18,6 +18,7 @@ import PortfolioStyleSeven from "./PortfolioStyleSeven";
 import PortfolioStyleEight from "./PortfolioStyleEight";
 import PortfolioStyleNine from "./PortfolioStyleNine";
 import PortfolioStyleTen from "./PortfolioStyleTen";
+import PortfolioStyleEleven from "./PortfolioStyleEleven";
 import StyleIntroOverlay from "./StyleIntroOverlay";
 import StyleSwitcher from "./StyleSwitcher";
 import { getInitials } from "./style-two/helpers";
@@ -161,6 +162,8 @@ export default function PortfolioClient({
               return <PortfolioStyleNine {...pageProps} />;
             case "style-10":
               return <PortfolioStyleTen {...pageProps} />;
+            case "style-11":
+              return <PortfolioStyleEleven {...pageProps} />;
             default:
               return (
                 <PortfolioStyleOne
