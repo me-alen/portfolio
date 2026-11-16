@@ -130,6 +130,16 @@ const SWITCHER_THEMES: Partial<Record<PortfolioStyle, SwitcherTheme>> = {
     hoverBg: "rgba(255, 255, 255, 0.07)",
     label: "rgba(244, 247, 255, 0.6)",
   },
+  "style-11": {
+    accent: "#ef4444",
+    logo: "#f5f5f5",
+    panelBg: "rgba(10, 10, 10, 0.96)",
+    panelBorder: "rgba(239, 68, 68, 0.35)",
+    panelText: "#f5f5f5",
+    activeBg: "rgba(239, 68, 68, 0.14)",
+    hoverBg: "rgba(255, 255, 255, 0.06)",
+    label: "#a1a1aa",
+  },
 };
 
 export default function StyleSwitcher({
@@ -183,6 +193,7 @@ export default function StyleSwitcher({
   return (
     <div
       ref={rootRef}
+      data-chrome
       className="fixed left-6 top-5 z-[1150] sm:left-12"
       style={{ mixBlendMode: blendLogo ? "difference" : undefined }}
     >

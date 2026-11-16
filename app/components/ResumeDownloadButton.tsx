@@ -233,6 +233,7 @@ export default function ResumeDownloadButton({
   return (
     <div
       ref={wrapperRef}
+      data-chrome
       style={{
         bottom: isMobile ? 10 : 16,
         height: BUTTON_SIZE,

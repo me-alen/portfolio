@@ -23,17 +23,30 @@ export type EducationItem = {
   period: string;
 };
 
+// First professional role started Dec 2, 2019 (month is 0-based).
+const CAREER_START = new Date(2019, 11, 2);
+const YEAR_MS = 365.25 * 24 * 60 * 60 * 1000;
+
+/** Professional experience in decimal years, rounded down to 0.1: "6.9+", "7+", "7.1+"… */
+export function experienceYears(now = new Date()) {
+  const tenths = Math.floor(((now.getTime() - CAREER_START.getTime()) / YEAR_MS) * 10);
+  return `${tenths / 10}+`;
+}
+
+// Getters, so every server render uses today's date (no yearly edits).
 export const profile = {
   name: "Alen Francis",
   role: "Senior Software Engineer ( Frontend / Fullstack )",
-  intro:
-    "Senior Software Engineer with 6.5+ years of experience building responsive, user-focused web and mobile products using Angular, React, React Native, and Next.js.",
-  about:
-  `I’m a Senior Software Engineer with 6.5+ years of experience building scalable web and mobile applications using React, Next.js, Angular, React Native, TypeScript, and modern JavaScript technologies. I enjoy designing clean frontend architectures, creating intuitive user experiences, and developing high-quality software that is performant, maintainable, and built to scale. I’m comfortable working across the full product development lifecycle, collaborating with cross-functional teams to deliver reliable features for both web and cross-platform mobile applications.
+  get intro() {
+    return `Senior Software Engineer with ${experienceYears()} years of experience building responsive, user-focused web and mobile products using Angular, React, React Native, and Next.js.`;
+  },
+  get about() {
+    return `I’m a Senior Software Engineer with ${experienceYears()} years of experience building scalable web and mobile applications using React, Next.js, Angular, React Native, TypeScript, and modern JavaScript technologies. I enjoy designing clean frontend architectures, creating intuitive user experiences, and developing high-quality software that is performant, maintainable, and built to scale. I’m comfortable working across the full product development lifecycle, collaborating with cross-functional teams to deliver reliable features for both web and cross-platform mobile applications.
 
 Throughout my career, I’ve contributed to customer-facing products by building reusable component libraries, integrating APIs, optimizing application performance, and implementing real-time features. I enjoy working closely with designers, backend engineers, QA teams, and DevOps engineers to transform ideas into production-ready solutions, while following modern development practices such as Git workflows, CI/CD automation, code reviews, Agile methodologies, and technical specification writing.
 
-I’m passionate about continuously improving the way software is built by embracing modern development tools and emerging technologies. I actively use AI-assisted workflows with Cursor AI, Claude Code and GitHub Copilot to accelerate development, improve code quality, and streamline technical documentation. I enjoy exploring new frameworks, best practices, and engineering approaches that enable teams to iterate faster, build better products, and deliver meaningful experiences to users.`
+I’m passionate about continuously improving the way software is built by embracing modern development tools and emerging technologies. I actively use AI-assisted workflows with Cursor AI, Claude Code and GitHub Copilot to accelerate development, improve code quality, and streamline technical documentation. I enjoy exploring new frameworks, best practices, and engineering approaches that enable teams to iterate faster, build better products, and deliver meaningful experiences to users.`;
+  },
 };
 
 export const languages = [

@@ -2,12 +2,15 @@ import {
   Archivo,
   Baloo_2,
   Bangers,
+  Bebas_Neue,
+  Caveat,
   Comic_Neue,
   Cormorant_Garamond,
   DM_Mono,
   Fraunces,
   Instrument_Serif,
   Manrope,
+  Plus_Jakarta_Sans,
   Press_Start_2P,
   Saira,
   Sora,
@@ -107,4 +110,23 @@ export const saira = Saira({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-style10-display",
+});
+
+export const bebasNeue = Bebas_Neue({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-style11-display",
+  weight: "400",
+});
+
+export const caveat = Caveat({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-style11-script",
+});
+
+export const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-style11-sans",
 });
