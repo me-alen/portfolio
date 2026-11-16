@@ -153,7 +153,7 @@ export default function PortfolioStyleEleven({
         className={`portfolio-style-11 ${bebasNeue.variable} ${caveat.variable} ${plusJakarta.variable}`}
         data-tour={touring ? "on" : "off"}
       >
-        <nav className="s11-nav" aria-label="Portfolio sections">
+        <nav className="s11-nav" aria-label="Portfolio sections" data-l>
           <ul className="s11-nav-links">
             {SECTIONS.map((section) => (
               <li key={section.id}>
@@ -172,7 +172,7 @@ export default function PortfolioStyleEleven({
             ))}
           </ul>
           <div className="s11-nav-status">
-            <span className="s11-avail">
+            <span className="s11-avail" data-l>
               <span className="s11-dot" aria-hidden="true" />
               Available
             </span>

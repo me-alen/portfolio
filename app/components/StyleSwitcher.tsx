@@ -193,6 +193,7 @@ export default function StyleSwitcher({
   return (
     <div
       ref={rootRef}
+      data-chrome
       className="fixed left-6 top-5 z-[1150] sm:left-12"
       style={{ mixBlendMode: blendLogo ? "difference" : undefined }}
     >

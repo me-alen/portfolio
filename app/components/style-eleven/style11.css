@@ -83,7 +83,8 @@ html[data-portfolio-style="style-11"] {
 /* Until the intro tags the page, hide it so it never flashes. The delayed
    animation is a failsafe: with JavaScript off, or if the intro never
    starts, the page still appears after 3.5s. */
-.portfolio-style-11[data-tour="on"]:not([data-tagged]) > * {
+.portfolio-style-11[data-tour="on"]:not([data-tagged]) > *,
+body:has(.portfolio-style-11[data-tour="on"]:not([data-tagged])) [data-chrome] {
   opacity: 0;
   animation: s11-failsafe 0.4s ease 3.5s forwards;
 }
@@ -96,12 +97,15 @@ html[data-portfolio-style="style-11"] {
 
 /* An element still waiting for an agent. Content created later is never
    tagged, so it simply shows. */
-.portfolio-style-11 [data-wait] {
+.portfolio-style-11 [data-wait],
+[data-chrome][data-wait] {
   opacity: 0;
 }
 
-/* Fade only on reveal: tagging must hide instantly, or the page flashes. */
-.portfolio-style-11[data-tour="on"] :is([data-l], h1, h2, h3, p, li, img, a, button):not([data-wait]) {
+/* Fade only on reveal: tagging must hide instantly, or the page flashes.
+   [data-chrome] marks the site-wide switcher and resume button. */
+.portfolio-style-11[data-tour="on"] :is([data-l], h1, h2, h3, p, li, img, a, button):not([data-wait]),
+body:has(.portfolio-style-11[data-tour="on"]) [data-chrome]:not([data-wait]) {
   transition: opacity 0.3s ease;
 }
 
@@ -968,13 +972,18 @@ html[data-portfolio-style="style-11"] {
   }
 }
 
+/* Moved every frame by Style11Tour's loop, so no CSS transitions here. */
 .s11-agent {
   position: absolute;
   top: 0;
   left: 0;
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.45, 0.05, 0.25, 1);
   will-change: transform;
+}
+
+/* Leans and squishes around the arrow tip (the hotspot). */
+.s11-agent-body {
+  display: block;
+  transform-origin: 3px 3px;
 }
 
 .s11-agent svg {
@@ -1009,8 +1018,15 @@ html[data-portfolio-style="style-11"] {
   transition-duration: 0.35s;
 }
 
-.s11-ph-text.is-on {
+/* Text frames, and drawn boxes once their gray fill has faded. */
+.s11-ph-text.is-on,
+.s11-ph.is-framed {
   outline: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.s11-ph.is-framed .s11-ph-fill {
+  opacity: 0;
+  transition: opacity 0.35s ease;
 }
 
 .s11-ph.is-selected {
@@ -1021,13 +1037,9 @@ html[data-portfolio-style="style-11"] {
   position: absolute;
   inset: 0;
   background: #33363b;
+  /* Grown by the drawing agent's drag, frame by frame. */
   transform: scale(0);
   transform-origin: 0 0;
-  transition: transform var(--d, 300ms) cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.s11-ph.is-drawn .s11-ph-fill {
-  transform: scale(1);
 }
 
 .s11-ph-text .s11-ph-fill {
@@ -1339,7 +1351,9 @@ html[data-portfolio-style="style-11"] {
 
 @media (prefers-reduced-motion: reduce) {
   .portfolio-style-11[data-tour="on"]:not([data-tagged]) > *,
-  .portfolio-style-11 [data-wait] {
+  body:has(.portfolio-style-11[data-tour="on"]:not([data-tagged])) [data-chrome],
+  .portfolio-style-11 [data-wait],
+  [data-chrome][data-wait] {
     opacity: 1;
   }
 
