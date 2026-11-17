@@ -247,8 +247,8 @@ export default function PortfolioStyleEleven({
                 {highlights.map((item, index) => (
                   <article className="s11-card" key={item.keyword} data-l>
                     <div className="s11-card-top">
-                      <span className="s11-num">{pad(index + 1)}.</span>
-                      <span className="s11-tag">{item.tag}</span>
+                      <span className="s11-num" data-l>{pad(index + 1)}.</span>
+                      <span className="s11-tag" data-l>{item.tag}</span>
                     </div>
                     <h3>{item.company}</h3>
                     <p>{item.bullet}</p>
@@ -276,14 +276,14 @@ export default function PortfolioStyleEleven({
               </div>
               <ol className="s11-facts">
                 <li>
-                  <span className="s11-num">01</span>
+                  <span className="s11-num" data-l>01</span>
                   <div>
                     <h3>Based in</h3>
                     <p>{contact.location}</p>
                   </div>
                 </li>
                 <li>
-                  <span className="s11-num">02</span>
+                  <span className="s11-num" data-l>02</span>
                   <div>
                     <h3>Languages</h3>
                     <p>{languages.join(" · ")}</p>
@@ -291,7 +291,7 @@ export default function PortfolioStyleEleven({
                 </li>
                 {education.map((item, index) => (
                   <li key={item.degree}>
-                    <span className="s11-num">{pad(index + 3)}</span>
+                    <span className="s11-num" data-l>{pad(index + 3)}</span>
                     <div>
                       <h3>Education</h3>
                       <p>
@@ -315,11 +315,11 @@ export default function PortfolioStyleEleven({
             {current ? (
               <article className="s11-card s11-featured" data-l>
                 <div className="s11-featured-top">
-                  <span className="s11-badge">
+                  <span className="s11-badge" data-l>
                     <span className="s11-dot" aria-hidden="true" />
                     Current role
                   </span>
-                  <span className="s11-meta">
+                  <span className="s11-meta" data-l>
                     {current.role} · {current.period}
                   </span>
                 </div>
@@ -327,21 +327,21 @@ export default function PortfolioStyleEleven({
                 <p className="s11-featured-summary">{current.summary}</p>
 
                 <div className="s11-tiles">
-                  <div className="s11-tile">
-                    <strong>{current.period.split(" - ")[0]}</strong>
-                    <span>Joined</span>
+                  <div className="s11-tile" data-l>
+                    <strong data-l>{current.period.split(" - ")[0]}</strong>
+                    <span data-l>Joined</span>
                   </div>
-                  <div className="s11-tile">
-                    <strong>{current.bullets.length}</strong>
-                    <span>Key achievements</span>
+                  <div className="s11-tile" data-l>
+                    <strong data-l>{current.bullets.length}</strong>
+                    <span data-l>Key achievements</span>
                   </div>
-                  <div className="s11-tile">
-                    <strong>{current.stack.length}</strong>
-                    <span>Technologies</span>
+                  <div className="s11-tile" data-l>
+                    <strong data-l>{current.stack.length}</strong>
+                    <span data-l>Technologies</span>
                   </div>
-                  <div className="s11-tile">
-                    <strong>{current.location}</strong>
-                    <span>Location</span>
+                  <div className="s11-tile" data-l>
+                    <strong data-l>{current.location}</strong>
+                    <span data-l>Location</span>
                   </div>
                 </div>
 
@@ -380,7 +380,7 @@ export default function PortfolioStyleEleven({
             <div className="s11-grid">
               {previous.map((job) => (
                 <article className="s11-card s11-job" key={job.company} data-l>
-                  <span className="s11-tag s11-tag-red">{job.role}</span>
+                  <span className="s11-tag s11-tag-red" data-l>{job.role}</span>
                   <h3>{job.company}</h3>
                   <p>{job.summary}</p>
                   <ul className="s11-dots">
@@ -394,8 +394,8 @@ export default function PortfolioStyleEleven({
                     ))}
                   </ul>
                   <div className="s11-job-foot">
-                    <span className="s11-chip">{job.period}</span>
-                    <span className="s11-chip">{job.location}</span>
+                    <span className="s11-chip" data-l>{job.period}</span>
+                    <span className="s11-chip" data-l>{job.location}</span>
                   </div>
                 </article>
               ))}
@@ -437,10 +437,10 @@ export default function PortfolioStyleEleven({
                     data-l
                   >
                     <div className="s11-card-top">
-                      <span className="s11-tag s11-tag-red">
+                      <span className="s11-tag s11-tag-red" data-l>
                         {project.category.replace(" Projects", "")}
                       </span>
-                      <span className="s11-id">#PRJ-{pad(number)}</span>
+                      <span className="s11-id" data-l>#PRJ-{pad(number)}</span>
                     </div>
                     <h3>{project.title}</h3>
                     {showPeriod ? (
@@ -487,8 +487,8 @@ export default function PortfolioStyleEleven({
               {skillGroups.map((group, index) => (
                 <article className="s11-card" key={group.title} data-l>
                   <div className="s11-card-top">
-                    <span className="s11-num">{pad(index + 1)}</span>
-                    <span className="s11-tag">{group.skills.length} tools</span>
+                    <span className="s11-num" data-l>{pad(index + 1)}</span>
+                    <span className="s11-tag" data-l>{group.skills.length} tools</span>
                   </div>
                   <h3>{group.title}</h3>
                   <ul className="s11-chips s11-chips-icons">

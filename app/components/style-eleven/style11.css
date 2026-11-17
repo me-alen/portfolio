@@ -684,7 +684,9 @@ body:has(.portfolio-style-11[data-tour="on"]) [data-chrome]:not([data-wait]) {
   font-weight: 600;
 }
 
+/* inline-block: same line as before, but a box the intro can type into. */
 .s11-tile span {
+  display: inline-block;
   color: var(--s11-dim);
   font-size: 12px;
 }
@@ -942,7 +944,103 @@ body:has(.portfolio-style-11[data-tour="on"]) [data-chrome]:not([data-wait]) {
   transition: opacity 0.4s ease;
 }
 
-.s11-tour-closing :is(.s11-tour-page, .s11-tour-view, .s11-tour-bar, .s11-tour-logo) {
+/* Design-tool rulers: px across the top (fixed), page position down the
+   left (anchored to the page, so it scrolls with the content). Above the
+   page and its wireframes, below the agent cursors. */
+.s11-ruler-x,
+.s11-ruler-y,
+.s11-ruler-corner {
+  --tick: rgba(255, 255, 255, 0.22);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1060;
+  background-color: #1c1c1f;
+  color: #8b8b93;
+  font: 500 9px/1 var(--font-geist-mono), monospace;
+  pointer-events: none;
+  /* Hidden until agents measure or drag out a box (.s11-rulers-on). */
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.s11-rulers-on :is(.s11-ruler-x, .s11-ruler-y, .s11-ruler-corner) {
+  opacity: 1;
+}
+
+.s11-ruler-x {
+  right: 0;
+  height: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  /* Ticks every 100px (full), 50px (7px) and 10px (4px). */
+  background-image:
+    repeating-linear-gradient(to right, var(--tick) 0 1px, transparent 1px 100px),
+    repeating-linear-gradient(to right, var(--tick) 0 1px, transparent 1px 50px),
+    repeating-linear-gradient(to right, var(--tick) 0 1px, transparent 1px 10px);
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  background-size:
+    100% 100%,
+    100% 7px,
+    100% 4px;
+}
+
+.s11-ruler-y {
+  position: absolute;
+  width: 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background-image:
+    repeating-linear-gradient(to bottom, var(--tick) 0 1px, transparent 1px 100px),
+    repeating-linear-gradient(to bottom, var(--tick) 0 1px, transparent 1px 50px),
+    repeating-linear-gradient(to bottom, var(--tick) 0 1px, transparent 1px 10px);
+  background-position: right top;
+  background-repeat: no-repeat;
+  background-size:
+    100% 100%,
+    7px 100%,
+    4px 100%;
+}
+
+.s11-ruler-corner {
+  z-index: 1061;
+  width: 20px;
+  height: 20px;
+}
+
+.s11-ruler-x span {
+  position: absolute;
+  top: 3px;
+  padding-left: 3px;
+}
+
+.s11-ruler-y span {
+  position: absolute;
+  left: 3px;
+  padding-bottom: 3px;
+  /* Reads bottom to top, like a design tool's vertical ruler. */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* On a phone the left ruler would cover the start of every line. */
+@media (max-width: 719px) {
+  .s11-ruler-x,
+  .s11-ruler-y,
+  .s11-ruler-corner {
+    display: none;
+  }
+}
+
+.s11-tour-closing
+  :is(
+    .s11-tour-page,
+    .s11-tour-view,
+    .s11-tour-bar,
+    .s11-tour-logo,
+    .s11-ruler-x,
+    .s11-ruler-y,
+    .s11-ruler-corner
+  ) {
   opacity: 0;
 }
 
@@ -1360,7 +1458,10 @@ body:has(.portfolio-style-11[data-tour="on"]) [data-chrome]:not([data-wait]) {
   .s11-tour-page,
   .s11-tour-view,
   .s11-tour-logo,
-  .s11-tour-bar {
+  .s11-tour-bar,
+  .s11-ruler-x,
+  .s11-ruler-y,
+  .s11-ruler-corner {
     display: none;
   }
 }

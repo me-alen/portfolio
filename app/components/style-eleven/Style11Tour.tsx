@@ -18,10 +18,11 @@ const COLORS = [
 ];
 const LETTERS = "ABCDEFGHJKLMNPRSTVWZ";
 const SPEEDS = [1, 2, 4];
+// The button's "1×" runs the clock at 1.25: a true 1× felt slow.
+const BASE_SPEED = 1.25;
 const START_AGENTS = 8;
-// Each run's whole crew is capped at a random size in this range.
-const CREW_MIN = 15;
-const CREW_MAX = 19;
+// The whole crew for a run; agents never leave once they arrive.
+const CREW_SIZE = 25;
 
 // Base timings in ms at 1×; the animation clock runs 2× or 4× faster.
 const HOLD = 120;
@@ -31,6 +32,29 @@ const DUPLICATE_HOLD = 260;
 const TYPE_PER_CHAR = 9;
 const TYPE_MIN = 160;
 const TYPE_MAX = 700;
+// Backspacing a copied tile's old text runs faster than typing.
+const ERASE_PER_CHAR = 3;
+const ERASE_MIN = 100;
+const ERASE_MAX = 260;
+// Camera glide down the page, in px per second at 1×.
+const CAMERA_SPEED = 160;
+// Top ruler labels every 100px up to 4000px; the viewport clips the rest.
+const RULER_X = Array.from({ length: 40 }, (_, i) => (i + 1) * 100);
+// Finale swarm: a springy pull to each orbit slot around the pointer.
+const ORBIT_SPRING = 30;
+const ORBIT_DAMPING = 7;
+const ORBIT_MAX_SPEED = 1500;
+// The orbit centre trails the pointer by about this long (s): the swarm
+// always follows, but a moving pointer runs ahead into the leading agents.
+const NUCLEUS_LAG = 0.35;
+// A hit is the pointer passing within 3px of an agent's tip. The kick (px/s)
+// grows with the pointer's speed relative to the agent: a slow nudge bounces
+// it ~60px, a fast swipe sends it off screen before it coasts back.
+const HIT_RADIUS = 3;
+const BOUNCE_MIN = 60;
+const BOUNCE_GAIN = 1.2;
+const BOUNCE_MAX = 6000;
+const COAST_FRICTION = 3;
 
 // Static markup for the three agent tools: select arrow, draw crosshair, text I-beam.
 const CURSOR_SVGS =
@@ -58,6 +82,8 @@ type Agent = {
   letter: string;
   color: string;
   busy: boolean;
+  // Checking finished work while idle; any build job takes priority.
+  reviewing: boolean;
   x: number;
   y: number;
   lastX: number;
@@ -68,10 +94,22 @@ type Agent = {
   anchor: { x: number; y: number; rx: number; ry: number } | null;
   // Finale: the spot on an element this agent stays on.
   park: (() => Point) | null;
+  // Finale: an electron-like orbit around the visitor's pointer.
+  orbit: Orbit | null;
   rest: number;
 };
+type Orbit = {
+  radius: number;
+  squash: number;
+  tilt: number;
+  spin: number;
+  theta: number;
+  vx: number;
+  vy: number;
+  // Knocked away by a hit: coasting until it slows, then back to orbit.
+  coasting: boolean;
+};
 type Tween = { t: number; dur: number; frame?: (k: number) => void; done: () => void };
-type Job = (agent: Agent, el: HTMLElement) => Promise<void>;
 type Line = { top: number; bottom: number; left: number; right: number };
 type Avatar = { letter: string; color: string };
 
@@ -97,16 +135,19 @@ export default function Style11Tour({
   const [phase, setPhase] = useState<"scan" | "build" | "done">("scan");
   const [built, setBuilt] = useState(0);
   const [total, setTotal] = useState(0);
-  const [agentCount, setAgentCount] = useState(0);
+  const [crew, setCrew] = useState({ active: 0, idle: 0 });
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [touring, setTouring] = useState(true);
   const [speedIndex, setSpeedIndex] = useState(0);
   const [soundOn, setSoundOn] = useState(false);
   const [summary, setSummary] = useState("");
   const [closing, setClosing] = useState(false);
+  // Page height for the left ruler, which scrolls with the page.
+  const [docHeight, setDocHeight] = useState(0);
+  // Rulers show only while agents measure or drag out boxes.
+  const [rulers, setRulers] = useState(false);
   const touringRef = useRef(true);
-  const ownScrollRef = useRef(0);
-  const speedRef = useRef(1);
+  const speedRef = useRef(BASE_SPEED);
   const soundRef = useRef(false);
   const audioRef = useRef<AudioContext | null>(null);
   const skipRef = useRef<() => void>(() => {});
@@ -131,7 +172,6 @@ export default function Style11Tour({
     let lastFrame = 0;
     let spawned = 0;
     let spawnCooldown = 0;
-    const crewCap = CREW_MIN + Math.floor(Math.random() * (CREW_MAX - CREW_MIN + 1));
     const startedAt = performance.now();
     const timers = new Set<number>();
     const tweens = new Set<Tween>();
@@ -142,6 +182,8 @@ export default function Style11Tour({
     ];
     const layerSet = new Set(layers);
     const doneSet = new Set<HTMLElement>();
+    // When each layer was built, so idle agents can review fresh work.
+    const builtAt = new Map<HTMLElement, number>();
     const placeholders = new Map<HTMLElement, HTMLDivElement>();
     const agents: Agent[] = [];
 
@@ -170,7 +212,6 @@ export default function Style11Tour({
     layers.forEach((el) => el.setAttribute("data-wait", ""));
     root.setAttribute("data-tagged", "");
     window.scrollTo({ top: 0, behavior: "instant" });
-    ownScrollRef.current = 0;
 
     const markBuilt = (el: HTMLElement) => {
       if (doneSet.has(el)) {
@@ -178,6 +219,7 @@ export default function Style11Tour({
       }
       el.removeAttribute("data-wait");
       doneSet.add(el);
+      builtAt.set(el, performance.now());
       setBuilt(doneSet.size);
     };
 
@@ -303,7 +345,6 @@ export default function Style11Tour({
     };
 
     const updateCrew = () => {
-      setAgentCount(agents.length);
       setAvatars(agents.slice(-5).map(({ letter, color }) => ({ letter, color })));
     };
 
@@ -322,7 +363,7 @@ export default function Style11Tour({
     };
 
     const spawn = () => {
-      if (agents.length >= crewCap) {
+      if (agents.length >= CREW_SIZE) {
         return;
       }
       const index = spawned++;
@@ -349,6 +390,7 @@ export default function Style11Tour({
         color,
         letter: LETTERS[Math.floor(Math.random() * LETTERS.length)],
         busy: false,
+        reviewing: false,
         x,
         y,
         lastX: x,
@@ -357,9 +399,85 @@ export default function Style11Tour({
         move: null,
         anchor: null,
         park: null,
+        orbit: null,
         rest: 0,
       });
       updateCrew();
+    };
+
+    // The visitor's pointer: the finale swarm always orbits its last known
+    // spot. `sweepFrom` is where it was last frame, so a fast swipe that
+    // jumps past an agent between frames still counts as a hit.
+    let pointer: Point | null = null;
+    let nucleus: Point | null = null;
+    let sweepFrom: Point | null = null;
+    const pointerVel = { x: 0, y: 0 };
+    let pointerTime = 0;
+
+    // Shortest distance from p to the segment a→b.
+    const segmentDistance = (p: Point, a: Point, b: Point) => {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const len2 = dx * dx + dy * dy;
+      const t = len2 ? clamp(((p.x - a.x) * dx + (p.y - a.y) * dy) / len2, 0, 1) : 0;
+      return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
+    };
+
+    // Finale physics: a spring toward the orbit slot around the pointer (or
+    // the parked spot before there is one). A hit knocks the agent away at a
+    // speed set by how hard it was hit; it coasts, then springs back.
+    const orbitStep = (agent: Agent, orbit: Orbit, real: number, park?: Point) => {
+      if (pointer && sweepFrom && segmentDistance(agent, sweepFrom, pointer) <= HIT_RADIUS) {
+        let rx = pointerVel.x - orbit.vx;
+        let ry = pointerVel.y - orbit.vy;
+        const rel = Math.hypot(rx, ry);
+        if (rel < 1) {
+          // A pointer at rest on the agent: push it straight out.
+          rx = agent.x - pointer.x || Math.random() - 0.5;
+          ry = agent.y - pointer.y || Math.random() - 0.5;
+        }
+        const len = Math.hypot(rx, ry) || 1;
+        const kick = Math.min(BOUNCE_MAX, BOUNCE_MIN + rel * BOUNCE_GAIN);
+        orbit.vx = (rx / len) * kick;
+        orbit.vy = (ry / len) * kick;
+        orbit.coasting = true;
+        agent.press = 1;
+      }
+
+      if (pointer) {
+        orbit.theta += orbit.spin * real;
+      }
+      if (orbit.coasting) {
+        const slow = Math.max(0, 1 - COAST_FRICTION * real);
+        orbit.vx *= slow;
+        orbit.vy *= slow;
+        if (Math.hypot(orbit.vx, orbit.vy) < 60) {
+          orbit.coasting = false;
+        }
+      } else {
+        let tx: number;
+        let ty: number;
+        if (nucleus) {
+          const ox = Math.cos(orbit.theta) * orbit.radius;
+          const oy = Math.sin(orbit.theta) * orbit.radius * orbit.squash;
+          tx = nucleus.x + ox * Math.cos(orbit.tilt) - oy * Math.sin(orbit.tilt);
+          ty = nucleus.y + ox * Math.sin(orbit.tilt) + oy * Math.cos(orbit.tilt);
+        } else if (park) {
+          tx = park.x;
+          ty = park.y;
+        } else {
+          return;
+        }
+        orbit.vx += ((tx - agent.x) * ORBIT_SPRING - orbit.vx * ORBIT_DAMPING) * real;
+        orbit.vy += ((ty - agent.y) * ORBIT_SPRING - orbit.vy * ORBIT_DAMPING) * real;
+        const speed = Math.hypot(orbit.vx, orbit.vy);
+        if (speed > ORBIT_MAX_SPEED) {
+          orbit.vx *= ORBIT_MAX_SPEED / speed;
+          orbit.vy *= ORBIT_MAX_SPEED / speed;
+        }
+      }
+      agent.x += orbit.vx * real;
+      agent.y += orbit.vy * real;
     };
 
     const stepAgent = (agent: Agent, dt: number, real: number, target?: Point) => {
@@ -379,16 +497,19 @@ export default function Style11Tour({
           agent.move = null;
           move.done();
         }
-      } else if (agent.park && target) {
-        // Parked agents ride along with their element if the page scrolls.
-        agent.x = target.x;
-        agent.y = target.y;
+      } else if (agent.orbit) {
+        orbitStep(agent, agent.orbit, real, target);
       }
 
-      // Agents without work drift around, pausing between short glides.
-      if (!agent.busy && !agent.move && (agent.rest -= dt) <= 0) {
-        agent.rest = 0.4 + Math.random() * 1.2;
-        void moveTo(agent, idlePoint(agent), { pace: 0.45 });
+      // Agents without work review fresh work; with none in view they drift.
+      if (!agent.busy && !agent.reviewing && !agent.move && (agent.rest -= dt) <= 0) {
+        agent.rest = 0.1 + Math.random() * 0.3;
+        const fresh = building && !finished ? pickReview(agent) : null;
+        if (fresh) {
+          review(agent, fresh).catch(fail);
+        } else {
+          void moveTo(agent, idlePoint(agent), { pace: 0.45 });
+        }
       }
 
       // Lean into horizontal travel and squish briefly on each click.
@@ -400,20 +521,19 @@ export default function Style11Tour({
       agent.body.style.transform = `rotate(${agent.lean.toFixed(1)}deg) scale(${(1 - agent.press * 0.18).toFixed(3)})`;
     };
 
-    // Work queue: the nearest free agent takes the next layer, so agents that
-    // join mid-phase pitch in straight away.
+    // Work queue: layers join as they scroll into view, and the nearest free
+    // agent takes the first one that is ready.
     let queue: HTMLElement[] = [];
-    let job: Job | null = null;
+    const queued = new Set<HTMLElement>();
     let inflight = 0;
-    let phaseDone: (() => void) | null = null;
 
-    const settlePhase = () => {
-      if (!queue.length && !inflight && phaseDone) {
-        const done = phaseDone;
-        phaseDone = null;
-        job = null;
-        done();
-      }
+    const feed = () => {
+      layers.forEach((el) => {
+        if (!queued.has(el) && !doneSet.has(el) && isInView(el)) {
+          queued.add(el);
+          queue.push(el);
+        }
+      });
     };
 
     const pendingParent = (el: HTMLElement) => {
@@ -433,16 +553,15 @@ export default function Style11Tour({
     };
 
     const dispatch = () => {
-      const work = job;
       queue = queue.filter((el) => !doneSet.has(el));
-      while (work && !cancelled && queue.length) {
+      while (!cancelled && queue.length) {
         const free = agents.filter((agent) => !agent.busy);
         if (!free.length) {
           return;
         }
         let index = queue.findIndex(ready);
         if (index < 0) {
-          // Blocked only by work outside this screen: take the next layer
+          // Blocked only by work outside the view: take the next layer
           // anyway (build() does its parent first).
           if (inflight) {
             return;
@@ -455,25 +574,84 @@ export default function Style11Tour({
         const agent = free.reduce((best, next) => (distance(next) < distance(best) ? next : best));
         agent.busy = true;
         inflight++;
-        work(agent, el)
+        build(agent, el)
           .catch(fail)
           .finally(() => {
             agent.busy = false;
             inflight--;
             dispatch();
-            settlePhase();
           });
       }
     };
 
-    const runPhase = (tasks: HTMLElement[], work: Job) =>
-      new Promise<void>((resolve) => {
-        queue = [...tasks];
-        job = work;
-        phaseDone = resolve;
-        dispatch();
-        settlePhase();
-      });
+    // Camera: a steady glide down the page while the crew builds what it shows.
+    let camOn = false;
+    let camY = 0;
+    let camV = 0;
+    let lastSetY = 0;
+    let feedClock = 0;
+    let shownActive = -1;
+    let shownTotal = -1;
+    let rulersOn = false;
+    let rulersUntil = 0;
+    const showRulers = (ms: number) => {
+      rulersUntil = Math.max(rulersUntil, performance.now() + ms);
+      if (!rulersOn) {
+        rulersOn = true;
+        setRulers(true);
+      }
+    };
+
+    // Fixed layers (nav, style switcher, resume button) never scroll out of
+    // view, so they must not hold the camera.
+    const pinned = new Set(
+      layers.filter((el) => {
+        for (let node: HTMLElement | null = el; node; node = node.parentElement) {
+          if (getComputedStyle(node).position === "fixed") {
+            return true;
+          }
+        }
+        return false;
+      }),
+    );
+
+    // Camera throttle from the highest unbuilt layer: full speed while it is
+    // below 45% of the view, easing to a stop as it nears 12% from the top,
+    // so the crew gets time to catch up before the camera has to wait.
+    const throttle = () => {
+      let highest = Infinity;
+      for (const el of queued) {
+        if (!doneSet.has(el) && !pinned.has(el)) {
+          highest = Math.min(highest, el.getBoundingClientRect().bottom);
+        }
+      }
+      const vh = window.innerHeight;
+      return clamp((highest - vh * 0.12) / (vh * 0.33), 0, 1);
+    };
+
+    const steerCamera = (dt: number, room: number) => {
+      if (!touringRef.current) {
+        camOn = false;
+        camV = 0;
+        return;
+      }
+      if (!camOn) {
+        camOn = true;
+        camY = lastSetY = window.scrollY;
+      }
+      // A scrollbar drag fires no wheel or touch event: catch it here.
+      if (Math.abs(window.scrollY - lastSetY) > 30) {
+        stopTouring();
+        return;
+      }
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const want = camY >= max ? 0 : CAMERA_SPEED * room;
+      // Ease in and out of pauses instead of stopping dead.
+      camV += (want - camV) * Math.min(1, dt * 3);
+      camY = Math.min(max, camY + camV * dt);
+      window.scrollTo({ top: camY, behavior: "instant" });
+      lastSetY = window.scrollY;
+    };
 
     // One frame loop drives every cursor, tween and spawn.
     const tick = (now: number) => {
@@ -482,6 +660,20 @@ export default function Style11Tour({
         // Clamped so the first frame after a hidden-tab pause never teleports.
         const real = lastFrame ? Math.min(0.05, (now - lastFrame) / 1000) : 0;
         lastFrame = now;
+        // No pointer events for a moment means the pointer has stopped.
+        if (now - pointerTime > 100) {
+          pointerVel.x = 0;
+          pointerVel.y = 0;
+        }
+        if (pointer && nucleus) {
+          const ease = Math.min(1, real / NUCLEUS_LAG);
+          nucleus.x += (pointer.x - nucleus.x) * ease;
+          nucleus.y += (pointer.y - nucleus.y) * ease;
+        }
+        if (rulersOn && now > rulersUntil) {
+          rulersOn = false;
+          setRulers(false);
+        }
         const dt = real * speedRef.current;
 
         tweens.forEach((item) => {
@@ -496,18 +688,35 @@ export default function Style11Tour({
 
         // Read every target before writing any transform (no layout thrash).
         const targets = agents.map((agent) => (agent.move ? agent.move.to() : agent.park?.()));
+        let room = 1;
+        if (building && !finished) {
+          feedClock -= real;
+          if (feedClock <= 0) {
+            feedClock = 0.1;
+            feed();
+          }
+          room = throttle();
+        }
         agents.forEach((agent, i) => stepAgent(agent, dt, real, targets[i]));
+        sweepFrom = pointer ? { x: pointer.x, y: pointer.y } : null;
 
         if (building && !finished) {
+          // Bar counts: active = building or reviewing; idle = drifting.
+          const active = agents.filter((agent) => agent.busy || agent.reviewing).length;
+          if (active !== shownActive || agents.length !== shownTotal) {
+            shownActive = active;
+            shownTotal = agents.length;
+            setCrew({ active, idle: agents.length - active });
+          }
           spawnCooldown -= dt;
           // The crew grows with the work on screen, up to this run's cap.
-          const want = clamp(START_AGENTS + queue.length + inflight, START_AGENTS, crewCap);
+          const want = clamp(START_AGENTS + queue.length + inflight, START_AGENTS, CREW_SIZE);
           if (spawnCooldown <= 0 && agents.length < want) {
             spawn();
             spawnCooldown = 0.08;
           }
           dispatch();
-          settlePhase();
+          steerCamera(dt, room);
         }
       } catch (error) {
         fail(error);
@@ -545,13 +754,19 @@ export default function Style11Tour({
       }));
     };
 
-    const makePlaceholder = (el: HTMLElement, kind: Kind) => {
+    // A frame over an element: outline, corner handles and a size label.
+    const frameFor = (el: HTMLElement, kind: Kind) => {
       const r = el.getBoundingClientRect();
       const ph = document.createElement("div");
       ph.className = `s11-ph s11-ph-${kind}`;
       place(ph, r.left + window.scrollX, r.top + window.scrollY, r.width, r.height);
       ph.innerHTML = `<span class="s11-ph-fill"></span><i></i><i></i><i></i><i></i><span class="s11-ph-size">${Math.round(r.width)} × ${Math.round(r.height)}</span>`;
       page.appendChild(ph);
+      return ph;
+    };
+
+    const makePlaceholder = (el: HTMLElement, kind: Kind) => {
+      const ph = frameFor(el, kind);
       placeholders.set(el, ph);
       return ph;
     };
@@ -574,6 +789,10 @@ export default function Style11Tour({
         const r = el.getBoundingClientRect();
         agent.press = 1;
         blip(420, 0.07, 0.03);
+        // Rulers for big layout moves only; small boxes come and go constantly.
+        if (r.width * r.height > window.innerWidth * window.innerHeight * 0.08) {
+          showRulers(1200);
+        }
         // The gray box grows with the cursor as it drags to the far corner.
         await moveTo(agent, at(el, r.width, r.height), {
           drag: true,
@@ -596,7 +815,10 @@ export default function Style11Tour({
     };
 
     // Red spacing measurement, target outline and alignment guide.
-    const measure = (from: DOMRect, to: DOMRect) => {
+    const measure = (from: DOMRect, to: DOMRect, rulers = true) => {
+      if (rulers) {
+        showRulers(1600);
+      }
       const marks: HTMLElement[] = [];
       const sx = window.scrollX;
       const sy = window.scrollY;
@@ -632,6 +854,71 @@ export default function Style11Tour({
 
     // Copy a finished tile into this slot, as a designer would: the agent
     // carries the copy over, then it cross-fades into this tile's own content.
+    // Fresh work in view for an idle agent to check: nearby first, with some
+    // randomness so reviewers spread out instead of crowding one element.
+    const underReview = new Set<HTMLElement>();
+    const pickReview = (agent: Agent) => {
+      const now = performance.now();
+      const screen = window.innerWidth * window.innerHeight;
+      let best: HTMLElement | null = null;
+      let bestScore = Infinity;
+      for (const [el, time] of builtAt) {
+        if (now - time > 30000 || underReview.has(el) || pinned.has(el)) {
+          continue;
+        }
+        const r = el.getBoundingClientRect();
+        if (
+          r.width < 30 ||
+          r.height < 14 ||
+          r.top < 80 ||
+          r.bottom > window.innerHeight - 100 ||
+          r.width * r.height > screen * 0.3
+        ) {
+          continue;
+        }
+        const score = Math.hypot(r.left - agent.x, r.top - agent.y) + Math.random() * 400;
+        if (score < bestScore) {
+          best = el;
+          bestScore = score;
+        }
+      }
+      return best;
+    };
+
+    // Review: select the element (outline, handles, size) or measure its gap
+    // to the next one. A build job reclaims the agent at any moment.
+    const review = async (agent: Agent, el: HTMLElement) => {
+      agent.reviewing = true;
+      underReview.add(el);
+      const marks: HTMLElement[] = [];
+      try {
+        setTool(agent, "arrow");
+        const r = el.getBoundingClientRect();
+        await moveTo(agent, at(el, Math.min(r.width / 2, 80), Math.min(r.height / 2, 24)), {
+          pace: 0.8,
+        });
+        if (cancelled || agent.busy) {
+          return;
+        }
+        agent.press = 1;
+        const next = el.nextElementSibling;
+        const nr = next instanceof HTMLElement && doneSet.has(next) ? next.getBoundingClientRect() : null;
+        if (nr && nr.top < window.innerHeight - 100 && Math.random() < 0.5) {
+          // A quick spot check: no rulers (they would never go away).
+          marks.push(...measure(el.getBoundingClientRect(), nr, false));
+        } else {
+          const box = frameFor(el, "text");
+          box.classList.add("is-on", "is-selected");
+          marks.push(box);
+        }
+        await sleep(700 + Math.random() * 600);
+      } finally {
+        marks.forEach((mark) => mark.remove());
+        underReview.delete(el);
+        agent.reviewing = false;
+      }
+    };
+
     const copyTile = async (agent: Agent, target: HTMLElement, template: HTMLElement) => {
       // The nearest finished tile before this one (the template at worst).
       let source = template;
@@ -655,7 +942,10 @@ export default function Style11Tour({
       ghost.setAttribute("aria-hidden", "true");
       ghost.inert = true;
       ghost.classList.add("s11-ghost");
+      // Sized to the slot, so the real tile can replace it without a jump.
       ghost.style.width = `${from.width}px`;
+      ghost.style.height = `${to.height}px`;
+      ghost.style.overflow = "hidden";
       source.after(ghost);
       const holder = (ghost.offsetParent as HTMLElement | null) ?? document.body;
       const base = holder.getBoundingClientRect();
@@ -682,20 +972,105 @@ export default function Style11Tour({
 
       const marks = measure(from, to);
       await sleep(DUPLICATE_HOLD);
+      marks.forEach((mark) => mark.remove());
+
+      // Clear the copy's old text; up to three idle agents pitch in, each
+      // backspacing every n-th field.
+      const fields = [...ghost.querySelectorAll<HTMLElement>(LAYER_SELECTOR)].filter(
+        (node) => kindOf(node) === "text" && node.getBoundingClientRect().height > 0,
+      );
+      const helpers = [agent, ...agents.filter((other) => !other.busy).slice(0, 3)];
+      helpers.forEach((helper) => {
+        helper.busy = true;
+      });
+      await Promise.all(
+        helpers.map(async (helper, i) => {
+          for (let j = i; j < fields.length && !cancelled; j += helpers.length) {
+            await eraseText(helper, fields[j]);
+          }
+        }),
+      );
+      helpers.slice(1).forEach((helper) => {
+        helper.busy = false;
+      });
       if (cancelled) {
         return;
       }
-      // Swap: the copy fades out while the real tile, content and all, fades in.
-      ghost.style.transition = "opacity 0.3s ease";
-      ghost.style.opacity = "0";
+      // The real tile, still empty, takes the copy's place; agents then type
+      // its own text into it (its text layers are ready once it is built).
       [target, ...target.querySelectorAll<HTMLElement>(LAYER_SELECTOR)].forEach((node) => {
-        if (layerSet.has(node)) {
+        if (layerSet.has(node) && kindOf(node) !== "text") {
           markBuilt(node);
         }
       });
-      marks.forEach((mark) => mark.remove());
+      ghost.style.transition = "opacity 0.3s ease";
+      ghost.style.opacity = "0";
       await sleep(320);
       ghost.remove();
+    };
+
+    // Where the caret sits after `reach` px of text, across wrapped lines.
+    const caretAt = (lines: Line[], widths: number[], reach: number) => {
+      let index = 0;
+      let before = 0;
+      while (index < lines.length - 1 && before + widths[index] < reach) {
+        before += widths[index];
+        index++;
+      }
+      const line = lines[index];
+      return { line, x: Math.min(line.right, line.left + (reach - before)) };
+    };
+
+    // Show text up to the caret: every line above it, the current line to x.
+    const clipText = (el: HTMLElement, line: Line, x: number) => {
+      el.style.clipPath = `polygon(0 0, 100% 0, 100% ${line.top}px, ${x}px ${line.top}px, ${x}px ${line.bottom}px, 0 ${line.bottom}px)`;
+    };
+
+    // Backspace a copied tile's old text, right to left, behind a caret.
+    const eraseText = async (agent: Agent, el: HTMLElement) => {
+      const lines = measureLines(el, el.getBoundingClientRect());
+      const widths = lines.map((line) => Math.max(1, line.right - line.left));
+      const totalWidth = widths.reduce((sum, width) => sum + width, 0);
+      const last = lines[lines.length - 1];
+
+      setTool(agent, "text");
+      await moveTo(agent, at(el, last.right + 3, (last.top + last.bottom) / 2), { pace: 2 });
+      if (cancelled) {
+        return;
+      }
+
+      const start = el.getBoundingClientRect();
+      const docLeft = start.left + window.scrollX;
+      const docTop = start.top + window.scrollY;
+      const caret = document.createElement("div");
+      caret.className = "s11-caret";
+      page.appendChild(caret);
+      const count = Math.max(1, (el.textContent ?? "").trim().length);
+      let left = -1;
+      let caretX = docLeft + last.right;
+      let caretY = docTop + (last.top + last.bottom) / 2;
+
+      await tween(clamp(count * ERASE_PER_CHAR, ERASE_MIN, ERASE_MAX), (k) => {
+        const next = Math.round((1 - k) * count);
+        if (next !== left) {
+          if (left >= 0 && next % 2 === 0) {
+            blip(1300 + Math.random() * 300, 0.02, 0.01);
+          }
+          left = next;
+          const { line, x } = caretAt(lines, widths, (left / count) * totalWidth);
+          clipText(el, line, x);
+          caret.style.height = `${line.bottom - line.top}px`;
+          caret.style.transform = `translate(${docLeft + x}px, ${docTop + line.top}px)`;
+          caretX = docLeft + x;
+          caretY = docTop + (line.top + line.bottom) / 2;
+        }
+        agent.x = caretX - window.scrollX + 3;
+        agent.y = clampY(caretY - window.scrollY);
+      });
+
+      el.style.visibility = "hidden";
+      caret.remove();
+      setTool(agent, "arrow");
     };
 
     // Fill pass for text: type it in behind a caret with a human rhythm.
@@ -753,16 +1128,8 @@ export default function Style11Tour({
             blip(1500 + Math.random() * 500, 0.025, 0.012);
           }
           shown = next;
-          const reach = (shown / count) * totalWidth;
-          let index = 0;
-          let before = 0;
-          while (index < lines.length - 1 && before + widths[index] < reach) {
-            before += widths[index];
-            index++;
-          }
-          const line = lines[index];
-          const x = Math.min(line.right, line.left + (reach - before));
-          el.style.clipPath = `polygon(0 0, 100% 0, 100% ${line.top}px, ${x}px ${line.top}px, ${x}px ${line.bottom}px, 0 ${line.bottom}px)`;
+          const { line, x } = caretAt(lines, widths, (shown / count) * totalWidth);
+          clipText(el, line, x);
           caret.style.height = `${line.bottom - line.top}px`;
           caret.style.transform = `translate(${docLeft + x}px, ${docTop + line.top}px)`;
           caretX = docLeft + x;
@@ -842,7 +1209,6 @@ export default function Style11Tour({
         }
         last = window.scrollY;
       }
-      ownScrollRef.current = window.scrollY;
     };
 
     // Any scroll by the visitor hands the camera back to them.
@@ -857,6 +1223,20 @@ export default function Style11Tour({
         stopTouring();
       }
     };
+    const onPointer = (event: PointerEvent) => {
+      const now = performance.now();
+      if (pointer && now > pointerTime) {
+        const dt = (now - pointerTime) / 1000;
+        // Smoothed, so one jittery event does not decide how hard a hit is.
+        pointerVel.x = pointerVel.x * 0.5 + ((event.clientX - pointer.x) / dt) * 0.5;
+        pointerVel.y = pointerVel.y * 0.5 + ((event.clientY - pointer.y) / dt) * 0.5;
+      }
+      pointer = { x: event.clientX, y: event.clientY };
+      nucleus ??= { ...pointer };
+      pointerTime = now;
+    };
+    window.addEventListener("pointermove", onPointer, { passive: true });
+    window.addEventListener("pointerdown", onPointer, { passive: true });
     window.addEventListener("wheel", stopTouring, { passive: true });
     window.addEventListener("touchmove", stopTouring, { passive: true });
     window.addEventListener("keydown", onKey);
@@ -888,6 +1268,7 @@ export default function Style11Tour({
         return;
       }
       setTotal(layers.length);
+      setDocHeight(document.documentElement.scrollHeight);
       layers.forEach((el) => {
         const r = el.getBoundingClientRect();
         if (!r.width || !r.height) {
@@ -919,41 +1300,19 @@ export default function Style11Tour({
       building = true;
       setPhase("build");
 
-      // Build screen by screen: wireframe everything in view, then fill it.
-      let stuck = 0;
+      // The frame loop glides the camera down the page while agents build
+      // whatever it brings into view; here we only wait for the last layer.
+      let quiet = 0;
       while (!cancelled && doneSet.size < layers.length) {
-        if (touringRef.current && Math.abs(window.scrollY - ownScrollRef.current) > 60) {
-          stopTouring();
+        await wait(250);
+        const atBottom =
+          window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 2;
+        // Safety net: at the bottom with nothing left to start, the rest can
+        // never come into view, and would hold the finale forever.
+        quiet = touringRef.current && atBottom && !queue.length && !inflight ? quiet + 1 : 0;
+        if (quiet > 8) {
+          layers.forEach(markBuilt);
         }
-        const batch = layers.filter((el) => !doneSet.has(el) && isInView(el));
-        if (!batch.length) {
-          if (!touringRef.current) {
-            await wait(300);
-            continue;
-          }
-          const next = layers.find((el) => !doneSet.has(el));
-          if (!next) {
-            break;
-          }
-          const before = window.scrollY;
-          const targetY =
-            window.scrollY + next.getBoundingClientRect().top - window.innerHeight * 0.1;
-          window.scrollTo({ top: targetY, behavior: "smooth" });
-          await settleScroll();
-          // Smooth scrolling needs animation frames (none in a background tab).
-          if (Math.abs(window.scrollY - before) < 2) {
-            window.scrollTo({ top: targetY, behavior: "instant" });
-            ownScrollRef.current = window.scrollY;
-          }
-          // Fallback for a layer the camera can never bring into view.
-          if (Math.abs(window.scrollY - before) < 2 && ++stuck > 1) {
-            markBuilt(next);
-            stuck = 0;
-          }
-          continue;
-        }
-        stuck = 0;
-        await runPhase(batch, build);
       }
       if (cancelled) {
         return;
@@ -982,7 +1341,19 @@ export default function Style11Tour({
       agents.forEach((agent, i) => {
         agent.busy = true;
         setTool(agent, "arrow");
-        // Spread across the screen: every n-th candidate in page order.
+        // Each its own slightly tilted, slightly oval orbit, speed and direction.
+        agent.orbit = {
+          // Closest pass ~30px, so a quick move can catch one.
+          radius: 50 + Math.random() * 100,
+          squash: 0.6 + Math.random() * 0.4,
+          tilt: Math.random() * Math.PI,
+          spin: (Math.random() < 0.5 ? -1 : 1) * (0.7 + Math.random() * 1.1),
+          theta: Math.random() * Math.PI * 2,
+          vx: 0,
+          vy: 0,
+          coasting: false,
+        };
+        // Without a pointer, rest on an element: every n-th one in page order.
         const el = spots[Math.floor((i * spots.length) / agents.length)];
         if (!el) {
           return;
@@ -994,7 +1365,6 @@ export default function Style11Tour({
           const b = el.getBoundingClientRect();
           return { x: b.left + dx, y: b.top + dy };
         };
-        void moveTo(agent, agent.park, { pace: 0.6 });
       });
       setSummary(`Rebuilt by ${spawned} agents in ${seconds}s`);
       setPhase("done");
@@ -1006,6 +1376,8 @@ export default function Style11Tour({
       cancelled = true;
       cancelAnimationFrame(raf);
       timers.forEach((id) => window.clearTimeout(id));
+      window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("pointerdown", onPointer);
       window.removeEventListener("wheel", stopTouring);
       window.removeEventListener("touchmove", stopTouring);
       window.removeEventListener("keydown", onKey);
@@ -1053,7 +1425,7 @@ export default function Style11Tour({
     setPhase("scan");
     setBuilt(0);
     setTotal(0);
-    setAgentCount(0);
+    setCrew({ active: 0, idle: 0 });
     setAvatars([]);
     setSummary("");
     setRunId((id) => id + 1);
@@ -1061,13 +1433,12 @@ export default function Style11Tour({
 
   const toggleTouring = () => {
     touringRef.current = !touringRef.current;
-    ownScrollRef.current = window.scrollY;
     setTouring(touringRef.current);
   };
 
   const cycleSpeed = () => {
     const nextIndex = (speedIndex + 1) % SPEEDS.length;
-    speedRef.current = SPEEDS[nextIndex];
+    speedRef.current = SPEEDS[nextIndex] * BASE_SPEED;
     setSpeedIndex(nextIndex);
   };
 
@@ -1083,9 +1454,29 @@ export default function Style11Tour({
   const progress = total ? built / total : 0;
 
   return (
-    <div className={`s11-tour${closing ? " s11-tour-closing" : ""}`}>
+    <div
+      className={`s11-tour${closing ? " s11-tour-closing" : ""}${rulers ? " s11-rulers-on" : ""}`}
+    >
       <div ref={pageRef} className="s11-tour-page" aria-hidden="true" />
       <div ref={viewRef} className="s11-tour-view" aria-hidden="true" />
+      {/* Design-tool rulers: px across the top, page position down the left. */}
+      <div className="s11-ruler-x" aria-hidden="true">
+        {RULER_X.map((x) => (
+          <span key={x} style={{ left: x }}>
+            {x}
+          </span>
+        ))}
+      </div>
+      <div className="s11-ruler-y" style={{ height: docHeight }} aria-hidden="true">
+        {Array.from({ length: Math.floor(docHeight / 100) }, (_, i) => (i + 1) * 100).map(
+          (y) => (
+            <span key={y} style={{ top: y }}>
+              {y}
+            </span>
+          ),
+        )}
+      </div>
+      <div className="s11-ruler-corner" aria-hidden="true" />
       {phase === "scan" ? (
         <div className="s11-tour-logo" aria-hidden="true">
           {initials}
@@ -1106,7 +1497,7 @@ export default function Style11Tour({
               ))}
             </span>
             <span>
-              <strong>{agentCount}</strong> agents
+              <strong>{crew.active}</strong> active · <strong>{crew.idle}</strong> idle
             </span>
             <span className="s11-tour-count">
               <strong>{built}</strong> / {total || "…"} layers
